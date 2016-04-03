@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
     save() {
       this.get('model').save().
         then(() => {
-          this.transitionToRoute('exercise.show', this.get('model.id'));
+          this.transitionToRoute('exercises.show', this.get('model.id'));
       });
     },
   },
