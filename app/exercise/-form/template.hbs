@@ -1,0 +1,37 @@
+<form {{action 'save' on='submit'}}>
+<div>
+<label>Name</label>
+{{input type='text' value=model.name name='name'}}
+<small>The name of the exercise. Must be unique.</small>
+</div>
+
+<div>
+<label>Description</label><br />
+{{textarea value=model.description name='description' rows=10 cols=60}}
+<small>The long description of the exercise. Markdown formatting allowed.</small>
+</div>
+
+<div>
+<label>Is Hold?</label>
+{{input type='checkbox' checked=model.isHold}}
+<small>Otherwise we will assume it's a Rep exercise</small>
+</div>
+
+<div>
+<label>Youtube ID</label>
+{{input type='text'}}
+<small>A single ID of a Youtube video explaining or showing the exercise.</small>
+</div>
+
+<div>
+<label>Amazon ID</label>
+{{input type='text'}}
+<small>This will probably be replaced w/ a multi-select of Equipment</small>
+</div>
+
+<p>
+<input type='submit' value='Save' />
+<button type="button" {{action 'cancel'}}>Cancel</button>
+</p>
+
+</form>
