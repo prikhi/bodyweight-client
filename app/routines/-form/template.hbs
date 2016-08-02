@@ -1,0 +1,25 @@
+<form {{action 'saveRoutine' on='submit'}}>
+
+  <div style='color:red;'>{{errorMessage}}</div>
+
+  <div>
+    <label>Routine Name</label>
+    {{input type='text' value=model.name}}
+    <small>The name of the routine</small>
+  </div>
+  <div>
+    <label>Public?</label>
+    {{input type='checkbox' checked=model.isPublic}}
+    <small>Should the routine be accessible by anyone?</small>
+  </div>
+  <hr />
+
+  {{#each model.sections as |section|}}
+    {{section-form model=section addExercise='addExercise'}}
+  {{/each}}
+
+  <p><button type='button' {{action 'newSection'}}>Add Section</button>
+     <button type='submit'>Save</button>
+  </p>
+
+</form>

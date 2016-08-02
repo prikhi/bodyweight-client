@@ -1,0 +1,21 @@
+<fieldset>
+  <legend>
+    Section: {{#if isEditing}}{{input type='text' value=model.name}}{{else}}{{model.name}}{{/if}}
+  </legend>
+  <div style='color:red;'>{{errorMessage}}</div>
+
+  {{#each sectionExercises as |sectionExercise|}}
+    {{exercise-form model=sectionExercises}}
+  {{/each}}
+
+  {{#if isEditing}}
+    <button {{action 'saveSection' model}}>Save</button>
+    <button {{action cancelSection }}>Cancel</button>
+    {{#if model.id}}<button {{action 'deleteSection' model}}>Delete</button>{{/if}}
+
+    <button {{action 'newExercise'}}>Add Exercise</button>
+  {{else}}
+    <button {{action toggleEditing}}>Edit</button>
+  {{/if}}
+
+</fieldset>

@@ -17,6 +17,9 @@ Router.map(function() {
       path: ':exercise_id/edit'
     });
   });
+  this.route('routines', function() {
+    this.route('new');
+  });
 });
 
 export default Router;
