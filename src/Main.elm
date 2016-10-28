@@ -26,13 +26,39 @@ main =
 
 init : Result String Route -> ( Model, Cmd Msg )
 init result =
-    ( { exercises = [], route = routeFromResult result }, fetchExercises )
+    let
+        route =
+            routeFromResult result
+    in
+        ( { exercises = [], route = route }, fetchForRoute route )
+
+
+fetchForRoute : Route -> Cmd Msg
+fetchForRoute route =
+    case route of
+        HomeRoute ->
+            Cmd.none
+
+        ExercisesRoute ->
+            fetchExercises
+
+        ExerciseRoute id ->
+            fetchExercise id
+
+        NotFoundRoute ->
+            Cmd.none
 
 
 fetchExercises =
     get "http://localhost:8080/exercises"
         |> send (jsonReader <| "exercise" := Decode.list exerciseDecoder) stringReader
         |> Task.perform FetchExercisesFail (FetchExercisesSucceed << .data)
+
+
+fetchExercise id =
+    get ("http://localhost:8080/exercises/" ++ toString id)
+        |> send (jsonReader <| "exercise" := exerciseDecoder) stringReader
+        |> Task.perform FetchExerciseFail (FetchExerciseSucceed << .data)
 
 
 exerciseDecoder : Decode.Decoder Exercise
@@ -52,7 +78,11 @@ exerciseDecoder =
 
 urlUpdate : Result String Route -> Model -> ( Model, Cmd Msg )
 urlUpdate result model =
-    ( { model | route = routeFromResult result }, Cmd.none )
+    let
+        route =
+            routeFromResult result
+    in
+        ( { model | route = route }, fetchForRoute route )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -71,4 +101,10 @@ update msg model =
             ( { model | exercises = newData }, Cmd.none )
 
         FetchExercisesFail _ ->
+            ( model, Cmd.none )
+
+        FetchExerciseSucceed newData ->
+            ( { model | exercises = newData :: model.exercises }, Cmd.none )
+
+        FetchExerciseFail _ ->
             ( model, Cmd.none )

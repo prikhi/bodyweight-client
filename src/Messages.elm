@@ -10,3 +10,5 @@ type Msg
     | VisitExercise ExerciseId
     | FetchExercisesSucceed (List Exercise)
     | FetchExercisesFail (Error String)
+    | FetchExerciseSucceed Exercise
+    | FetchExerciseFail (Error String)
