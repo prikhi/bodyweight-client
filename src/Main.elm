@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Html exposing (Html, Attribute, h1, div, text, table, thead, tr, th, tbody, td, ul, li, a, p)
+import Html exposing (..)
 import Html.App exposing (program)
 import Html.Attributes exposing (href)
 import Html.Events exposing (onWithOptions, defaultOptions, on, targetValue)
@@ -30,15 +30,21 @@ main =
 type Route
     = HomeRoute
     | ExercisesRoute
+    | ExerciseRoute ExerciseId
     | NotFoundRoute
 
 
 matchers : Parser (Route -> a) a
 matchers =
-    oneOf
-        [ format HomeRoute (s "")
-        , format ExercisesRoute (s "exercises" </> s "")
-        ]
+    let
+        s =
+            UrlParser.s
+    in
+        oneOf
+            [ format HomeRoute (s "")
+            , format ExercisesRoute (s "exercises" </> s "")
+            , format ExerciseRoute (s "exercises" </> int)
+            ]
 
 
 hashParser : Navigation.Location -> Result String Route
@@ -60,15 +66,19 @@ reverse : Route -> String
 reverse route =
     let
         routeToString route =
-            case route of
-                HomeRoute ->
-                    ""
+            flip (++) "/" <|
+                case route of
+                    HomeRoute ->
+                        ""
 
-                ExercisesRoute ->
-                    "exercises/"
+                    ExercisesRoute ->
+                        "exercises"
 
-                NotFoundRoute ->
-                    ""
+                    ExerciseRoute id ->
+                        routeToString ExercisesRoute ++ toString id
+
+                    NotFoundRoute ->
+                        ""
     in
         "#" ++ routeToString route
 
@@ -83,14 +93,26 @@ type alias Model =
     }
 
 
+type alias ExerciseId =
+    Int
+
+
 type alias Exercise =
-    { id : Int
+    { id : ExerciseId
     , name : String
     , description : String
     , isHold : Bool
     , amazonIds : String
     , youtubeIds : String
     }
+
+
+exerciseType : Exercise -> String
+exerciseType { isHold } =
+    if isHold then
+        "Hold"
+    else
+        "Reps"
 
 
 exerciseDecoder : Decode.Decoder Exercise
@@ -121,6 +143,7 @@ urlUpdate result model =
 type Msg
     = VisitHome
     | VisitExercises
+    | VisitExercise ExerciseId
     | FetchExercisesSucceed (List Exercise)
     | FetchExercisesFail (Error String)
 
@@ -133,6 +156,9 @@ update msg model =
 
         VisitExercises ->
             ( model, Navigation.newUrl <| reverse ExercisesRoute )
+
+        VisitExercise id ->
+            ( model, Navigation.newUrl <| reverse <| ExerciseRoute id )
 
         FetchExercisesSucceed newData ->
             ( { model | exercises = newData }, Cmd.none )
@@ -190,7 +216,7 @@ page { route, exercises } =
                 ]
 
         NotFoundRoute ->
-            h1 [] [ text "404 - Not Found" ]
+            notFoundPage
 
         ExercisesRoute ->
             div []
@@ -198,8 +224,42 @@ page { route, exercises } =
                 , exerciseTable exercises
                 ]
 
+        ExerciseRoute id ->
+            List.filter (\x -> x.id == id) exercises
+                |> List.head
+                |> Maybe.map exercisePage
+                |> Maybe.withDefault notFoundPage
 
-exerciseTable : List Exercise -> Html msg
+
+notFoundPage : Html msg
+notFoundPage =
+    h1 [] [ text "404 - Not Found" ]
+
+
+exercisePage : Exercise -> Html msg
+exercisePage ({ name, description } as exercise) =
+    let
+        descriptionText =
+            if String.isEmpty description then
+                ""
+            else
+                " - " ++ description
+    in
+        div []
+            [ h1 [] [ text name ]
+            , button [] [ text "Edit" ]
+            , text " "
+            , button [] [ text "Delete" ]
+            , p [] [ text "TODO - Youtube Embed Here" ]
+            , p []
+                [ b [] [ text <| exerciseType exercise ]
+                , text descriptionText
+                ]
+            , p [] [ text "TODO - Amazon Links Here" ]
+            ]
+
+
+exerciseTable : List Exercise -> Html Msg
 exerciseTable exercises =
     table []
         [ thead []
@@ -212,25 +272,20 @@ exerciseTable exercises =
         ]
 
 
-exerciseRow : Exercise -> Html msg
-exerciseRow { name, isHold } =
-    let
-        exerciseType =
-            if isHold then
-                "Hold"
-            else
-                "Reps"
-    in
-        tr []
-            [ td [] [ text name ]
-            , td []
-                [ text <|
-                    if isHold then
-                        "Hold"
-                    else
-                        "Reps"
+exerciseRow : Exercise -> Html Msg
+exerciseRow ({ id, name, isHold } as exercise) =
+    tr []
+        [ td []
+            [ a
+                [ href <| reverse <| ExerciseRoute id
+                , onClickNoDefault <| VisitExercise id
                 ]
+                [ text name ]
             ]
+        , td []
+            [ text <| exerciseType exercise
+            ]
+        ]
 
 
 
