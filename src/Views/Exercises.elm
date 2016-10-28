@@ -59,7 +59,7 @@ exerciseRow ({ id, name, isHold } as exercise) =
         [ td []
             [ a
                 [ href <| reverse <| ExerciseRoute id
-                , onClickNoDefault <| VisitExercise id
+                , onClickNoDefault <| NavigateTo <| ExerciseRoute id
                 ]
                 [ text name ]
             ]

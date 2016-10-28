@@ -88,14 +88,8 @@ urlUpdate result model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        VisitHome ->
-            ( model, Navigation.newUrl <| reverse HomeRoute )
-
-        VisitExercises ->
-            ( model, Navigation.newUrl <| reverse ExercisesRoute )
-
-        VisitExercise id ->
-            ( model, Navigation.newUrl <| reverse <| ExerciseRoute id )
+        NavigateTo route ->
+            ( model, Navigation.newUrl <| reverse route )
 
         FetchExercisesSucceed newData ->
             ( { model | exercises = newData }, Cmd.none )

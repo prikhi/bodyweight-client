@@ -20,14 +20,14 @@ nav =
         [ li []
             [ a
                 [ href <| reverse HomeRoute
-                , onClickNoDefault VisitHome
+                , onClickNoDefault <| NavigateTo HomeRoute
                 ]
                 [ text "Home" ]
             ]
         , li []
             [ a
                 [ href <| reverse ExercisesRoute
-                , onClickNoDefault VisitExercises
+                , onClickNoDefault <| NavigateTo ExercisesRoute
                 ]
                 [ text "Exercises" ]
             ]
