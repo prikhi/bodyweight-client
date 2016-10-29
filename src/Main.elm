@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Commands exposing (fetchForRoute)
 import Messages exposing (Msg(..), HttpMsg)
-import Model exposing (Model)
+import Model exposing (Model, initialModel)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import View exposing (view)
@@ -25,7 +25,7 @@ init result =
         route =
             routeFromResult result
     in
-        ( { exercises = [], route = route }, fetchForRoute route )
+        ( initialModel route, fetchForRoute route )
 
 
 
