@@ -34,7 +34,7 @@ exercisePage ({ id, name, description } as exercise) =
     in
         div []
             [ h1 [] [ text name ]
-            , button [] [ text "Edit" ]
+            , button [ onClick <| NavigateTo <| ExerciseEditRoute id ] [ text "Edit" ]
             , text " "
             , button [ onClick <| DeleteExerciseClicked id ] [ text "Delete" ]
             , p [] [ text "TODO - Youtube Embed Here" ]
@@ -111,7 +111,7 @@ exerciseForm { exerciseForm } =
                     []
                 ]
             , p []
-                [ input [ type' "submit" ] [ text "Save" ]
+                [ input [ type' "submit", value "Save" ] []
                 , text " "
                 , button [ onClick CancelExerciseForm ] [ text "Cancel" ]
                 ]

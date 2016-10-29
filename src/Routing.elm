@@ -13,6 +13,7 @@ type Route
     | ExercisesRoute
     | ExerciseAddRoute
     | ExerciseRoute ExerciseId
+    | ExerciseEditRoute ExerciseId
     | NotFoundRoute
 
 
@@ -24,6 +25,7 @@ matchers =
         [ format HomeRoute (s "")
         , format ExercisesRoute (s "exercises" </> s "")
         , format ExerciseAddRoute (s "exercises" </> s "add")
+        , format ExerciseEditRoute (s "exercises" </> int </> s "edit")
         , format ExerciseRoute (s "exercises" </> int)
         ]
 
@@ -68,6 +70,9 @@ reverse route =
 
                     ExerciseRoute id ->
                         routeToString ExercisesRoute ++ toString id
+
+                    ExerciseEditRoute id ->
+                        routeToString (ExerciseRoute id) ++ "edit"
 
                     NotFoundRoute ->
                         ""

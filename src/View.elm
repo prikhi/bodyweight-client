@@ -59,6 +59,12 @@ page ({ route, exercises } as model) =
                 |> Maybe.map exercisePage
                 |> Maybe.withDefault notFoundPage
 
+        ExerciseEditRoute id ->
+            List.filter (\x -> x.id == id) exercises
+                |> List.head
+                |> Maybe.map (always <| exerciseForm model)
+                |> Maybe.withDefault notFoundPage
+
 
 {-| Render the Home Page.
 -}

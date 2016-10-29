@@ -1,9 +1,9 @@
 module Update exposing (urlUpdate, update)
 
-import Commands exposing (fetchForRoute, createExercise, deleteExercise)
+import Commands exposing (fetchForRoute, createExercise, updateExercise, deleteExercise)
 import Messages exposing (Msg(..), HttpMsg, ExerciseFormMessage(..))
 import Model exposing (Model, initialModel)
-import Models.Exercises exposing (Exercise, initialExercise)
+import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
 
@@ -20,6 +20,9 @@ urlUpdate result model =
             case route of
                 ExerciseAddRoute ->
                     { model | exerciseForm = initialExercise }
+
+                ExerciseEditRoute id ->
+                    setExerciseForm id model
 
                 _ ->
                     model
@@ -44,10 +47,16 @@ update msg model =
             ( { model | exerciseForm = updateExerciseForm subMsg model }, Cmd.none )
 
         SubmitExerciseForm ->
-            ( model, createExercise model.exerciseForm )
+            if model.exerciseForm.id == 0 then
+                ( model, createExercise model.exerciseForm )
+            else
+                ( model, updateExercise model.exerciseForm )
 
         CancelExerciseForm ->
-            ( model, Navigation.newUrl <| reverse ExercisesRoute )
+            if model.exerciseForm.id == 0 then
+                ( model, Navigation.newUrl <| reverse ExercisesRoute )
+            else
+                ( model, Navigation.newUrl <| reverse <| ExerciseRoute model.exerciseForm.id )
 
         FetchExercises (Ok newExercises) ->
             ( { model | exercises = newExercises }, Cmd.none )
@@ -56,7 +65,16 @@ update msg model =
             ( model, Cmd.none )
 
         FetchExercise (Ok newExercise) ->
-            ( { model | exercises = newExercise :: model.exercises }, Cmd.none )
+            let
+                updatedModel =
+                    { model | exercises = newExercise :: model.exercises }
+            in
+                case model.route of
+                    ExerciseEditRoute id ->
+                        ( setExerciseForm id updatedModel, Cmd.none )
+
+                    _ ->
+                        ( updatedModel, Cmd.none )
 
         FetchExercise (Err _) ->
             ( model, Cmd.none )
@@ -76,6 +94,19 @@ update msg model =
 
         DeleteExercise (Err _) ->
             ( model, Cmd.none )
+
+
+{-| Set the Exercise Form to the Exercise with the specified Id.
+-}
+setExerciseForm : ExerciseId -> Model -> Model
+setExerciseForm id model =
+    let
+        newForm =
+            List.filter (\x -> x.id == id) model.exercises
+                |> List.head
+                |> Maybe.withDefault initialExercise
+    in
+        { model | exerciseForm = newForm }
 
 
 {-| Update the Exercise Form when a field has changed.

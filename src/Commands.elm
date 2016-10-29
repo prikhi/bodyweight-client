@@ -1,6 +1,6 @@
 module Commands exposing (..)
 
-import HttpBuilder exposing (send, stringReader, jsonReader, get, post, delete, withHeader, withJsonBody)
+import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, delete, withHeader, withJsonBody)
 import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
@@ -24,6 +24,9 @@ fetchForRoute route =
             Cmd.none
 
         ExerciseRoute id ->
+            fetchExercise id
+
+        ExerciseEditRoute id ->
             fetchExercise id
 
         NotFoundRoute ->
@@ -58,6 +61,17 @@ fetchExercise id =
 createExercise : Exercise -> Cmd Msg
 createExercise exercise =
     post ("/api/exercises/")
+        |> withHeader "Content-Type" "application/json"
+        |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
+        |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
+        |> Task.perform (CreateExercise << Err) (CreateExercise << Ok << .data)
+
+
+{-| Update an Exercise.
+-}
+updateExercise : Exercise -> Cmd Msg
+updateExercise exercise =
+    put ("/api/exercises/" ++ toString exercise.id)
         |> withHeader "Content-Type" "application/json"
         |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
