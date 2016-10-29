@@ -88,60 +88,44 @@ exerciseForm { exerciseForm } =
                 "Add Exercise"
             else
                 "Edit Exercise"
+
+        formField labelText field =
+            label [] [ text labelText, field ]
+
+        textField labelText inputName selector msg =
+            formField (labelText ++ ": ") <|
+                input
+                    [ name inputName
+                    , value <| selector exerciseForm
+                    , onInput (ExerciseFormChange << msg)
+                    ]
+                    []
     in
         form [ onSubmit SubmitExerciseForm ]
             [ h1 [] [ text titleText ]
-            , label []
-                [ text "Name: "
-                , input
-                    [ name "name"
-                    , value exerciseForm.name
-                    , onInput (ExerciseFormChange << NameChange)
-                    ]
-                    []
-                ]
+            , textField "Name" "name" .name NameChange
             , br [] []
-            , label []
-                [ text "Description: "
-                , br [] []
-                , textarea
-                    [ name "description"
-                    , value exerciseForm.description
-                    , onInput (ExerciseFormChange << DescriptionChange)
+            , formField "Description: " <|
+                div []
+                    [ textarea
+                        [ name "description"
+                        , value exerciseForm.description
+                        , onInput (ExerciseFormChange << DescriptionChange)
+                        ]
+                        []
                     ]
-                    []
-                ]
-            , br [] []
-            , label []
-                [ text "Is Hold? "
-                , input
+            , formField "Is Hold? " <|
+                input
                     [ name "is-hold"
                     , type' "checkbox"
                     , checked exerciseForm.isHold
                     , onCheck (ExerciseFormChange << IsHoldChange)
                     ]
                     []
-                ]
             , br [] []
-            , label []
-                [ text "Youtube ID: "
-                , input
-                    [ name "youtube"
-                    , value exerciseForm.youtubeIds
-                    , onInput (ExerciseFormChange << YoutubeChange)
-                    ]
-                    []
-                ]
+            , textField "Youtube ID" "youtube" .youtubeIds YoutubeChange
             , br [] []
-            , label []
-                [ text "Amazon ID: "
-                , input
-                    [ name "amazon"
-                    , value exerciseForm.amazonIds
-                    , onInput (ExerciseFormChange << AmazonChange)
-                    ]
-                    []
-                ]
+            , textField "Amazon ID" "amazon" .amazonIds AmazonChange
             , p []
                 [ input [ type' "submit", value "Save" ] []
                 , text " "
