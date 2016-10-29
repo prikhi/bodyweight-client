@@ -1,6 +1,6 @@
 module Model exposing (..)
 
-import Models.Exercises exposing (Exercise)
+import Models.Exercises exposing (Exercise, initialExercise)
 import Routing exposing (Route)
 
 
@@ -8,6 +8,7 @@ import Routing exposing (Route)
 -}
 type alias Model =
     { exercises : List Exercise
+    , exerciseForm : Exercise
     , route : Route
     }
 
@@ -16,4 +17,7 @@ type alias Model =
 -}
 initialModel : Route -> Model
 initialModel route =
-    { exercises = [], route = route }
+    { exercises = []
+    , exerciseForm = initialExercise
+    , route = route
+    }

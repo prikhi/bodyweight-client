@@ -1,8 +1,10 @@
 module Views.Exercises exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href)
-import Messages exposing (Msg(..))
+import Html.Attributes exposing (href, name, value, checked, type')
+import Html.Events exposing (onInput, onClick)
+import Messages exposing (Msg(..), ExerciseFormMessage(..))
+import Model exposing (Model)
 import Models.Exercises exposing (Exercise, exerciseType)
 import Routing exposing (Route(..), reverse)
 import String
@@ -41,6 +43,62 @@ exercisePage ({ name, description } as exercise) =
                 , text descriptionText
                 ]
             , p [] [ text "TODO - Amazon Links Here" ]
+            ]
+
+
+{-| Render the Add/Edit Exercise form.
+-}
+exerciseForm : Model -> Html Msg
+exerciseForm { exerciseForm } =
+    let
+        titleText =
+            if exerciseForm.id == 0 then
+                "Add Exercise"
+            else
+                "Edit Exercise"
+    in
+        div []
+            [ h1 [] [ text titleText ]
+            , label []
+                [ text "Name: "
+                , input
+                    [ name "name"
+                    , value exerciseForm.name
+                    , onInput (ExerciseFormChange << NameChange)
+                    ]
+                    []
+                ]
+            , br [] []
+            , label []
+                [ text "Description: "
+                , br [] []
+                , textarea
+                    [ name "description"
+                    , value exerciseForm.description
+                    , onInput (ExerciseFormChange << DescriptionChange)
+                    ]
+                    []
+                ]
+            , br [] []
+            , label []
+                [ text "Is Hold? "
+                , input [ type' "checkbox", checked exerciseForm.isHold ] []
+                ]
+            , br [] []
+            , label []
+                [ text "Youtube ID: "
+                , input [ name "youtube", value exerciseForm.youtubeIds ] []
+                ]
+            , br [] []
+            , label []
+                [ text "Amazon ID: "
+                , input [ name "amazon", value exerciseForm.amazonIds ] []
+                ]
+            , p []
+                [ button [ onClick SubmitExerciseForm ] [ text "Save" ]
+                , text " "
+                , button [ onClick CancelExerciseForm ] [ text "Cancel" ]
+                ]
             ]
 
 

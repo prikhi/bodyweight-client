@@ -11,9 +11,20 @@ type alias HttpMsg a =
     Result (Error String) a
 
 
+{-| A Message type used for changes to the Exercise form.
+-}
+type ExerciseFormMessage
+    = NameChange String
+    | DescriptionChange String
+
+
 {-| All Messages used in the application.
 -}
 type Msg
     = NavigateTo Route
+    | ExerciseFormChange ExerciseFormMessage
+    | SubmitExerciseForm
+    | CancelExerciseForm
     | FetchExercises (HttpMsg (List Exercise))
     | FetchExercise (HttpMsg Exercise)
+    | CreateExercise (HttpMsg Exercise)

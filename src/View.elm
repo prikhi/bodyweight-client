@@ -6,7 +6,7 @@ import Messages exposing (Msg(..))
 import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
 import Utils exposing (onClickNoDefault)
-import Views.Exercises exposing (exercisesPage, exercisePage)
+import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
 
 
 {-| Render the Navigation and Page Content
@@ -30,6 +30,8 @@ nav =
                 [ navLink "Home" HomeRoute ]
             , li []
                 [ navLink "Exercises" ExercisesRoute
+                , ul []
+                    [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
                 ]
             ]
 
@@ -37,7 +39,7 @@ nav =
 {-| Render the Page Content using the current Route.
 -}
 page : Model -> Html Msg
-page { route, exercises } =
+page ({ route, exercises } as model) =
     case route of
         HomeRoute ->
             homePage
@@ -47,6 +49,9 @@ page { route, exercises } =
 
         ExercisesRoute ->
             exercisesPage exercises
+
+        ExerciseAddRoute ->
+            exerciseForm model
 
         ExerciseRoute id ->
             List.filter (\x -> x.id == id) exercises

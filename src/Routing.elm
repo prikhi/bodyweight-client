@@ -11,6 +11,7 @@ import UrlParser exposing (..)
 type Route
     = HomeRoute
     | ExercisesRoute
+    | ExerciseAddRoute
     | ExerciseRoute ExerciseId
     | NotFoundRoute
 
@@ -22,6 +23,7 @@ matchers =
     oneOf
         [ format HomeRoute (s "")
         , format ExercisesRoute (s "exercises" </> s "")
+        , format ExerciseAddRoute (s "exercises" </> s "add")
         , format ExerciseRoute (s "exercises" </> int)
         ]
 
@@ -60,6 +62,9 @@ reverse route =
 
                     ExercisesRoute ->
                         "exercises"
+
+                    ExerciseAddRoute ->
+                        routeToString ExercisesRoute ++ "add"
 
                     ExerciseRoute id ->
                         routeToString ExercisesRoute ++ toString id
