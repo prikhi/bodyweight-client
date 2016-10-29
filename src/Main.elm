@@ -42,17 +42,14 @@ urlUpdate result model =
             routeFromResult result
 
         updatedModel =
-            { model | route = route }
-
-        updateModel oldModel =
             case route of
                 ExerciseAddRoute ->
-                    { oldModel | exerciseForm = initialExercise }
+                    { model | exerciseForm = initialExercise }
 
                 _ ->
-                    oldModel
+                    model
     in
-        ( updateModel updatedModel, fetchForRoute route )
+        ( { updatedModel | route = route }, fetchForRoute route )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
