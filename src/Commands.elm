@@ -30,7 +30,7 @@ fetchForRoute route =
 -}
 fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
 fetch url decoder msg =
-    get ("http://localhost:8080/" ++ url)
+    get ("/api/" ++ url)
         |> send (jsonReader decoder) stringReader
         |> Task.perform (msg << Err) (msg << Ok << .data)
 

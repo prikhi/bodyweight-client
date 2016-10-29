@@ -5,8 +5,9 @@ A Bodyweight Workout Log frontend written in Elm.
 # Setup
 
 ```
-npm -g i elm
-elm reactor
+npm i
+npm run dev
+open http://localhost:7000
 ```
 
 # License

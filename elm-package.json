@@ -1,7 +1,7 @@
 {
     "version": "0.1.0",
-    "summary": "A Bodyweight Workout Log Application",
-    "repository": "https://github.com/user/project.git",
+    "summary": "A Bodyweight Workout Logging Application",
+    "repository": "https://github.com/prikhi/bodyweight-client.git",
     "license": "GPL-3.0",
     "source-directories": [
         "src"
