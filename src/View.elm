@@ -5,7 +5,7 @@ import Html.Attributes exposing (href)
 import Messages exposing (Msg(..))
 import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (onClickNoDefault)
+import Utils exposing (findById, onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
 import Views.Routines exposing (routinesPage, routinePage)
 
@@ -57,14 +57,12 @@ page ({ route, exercises, routines } as model) =
             exerciseForm model
 
         ExerciseRoute id ->
-            List.filter (\x -> x.id == id) exercises
-                |> List.head
+            findById id exercises
                 |> Maybe.map exercisePage
                 |> Maybe.withDefault notFoundPage
 
         ExerciseEditRoute id ->
-            List.filter (\x -> x.id == id) exercises
-                |> List.head
+            findById id exercises
                 |> Maybe.map (always <| exerciseForm model)
                 |> Maybe.withDefault notFoundPage
 
@@ -72,8 +70,7 @@ page ({ route, exercises, routines } as model) =
             routinesPage routines
 
         RoutineRoute id ->
-            List.filter (\x -> x.id == id) routines
-                |> List.head
+            findById id routines
                 |> Maybe.map routinePage
                 |> Maybe.withDefault notFoundPage
 

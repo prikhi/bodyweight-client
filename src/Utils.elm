@@ -10,3 +10,18 @@ import Json.Decode as Decode exposing ((:=))
 onClickNoDefault : msg -> Attribute msg
 onClickNoDefault msg =
     onWithOptions "click" { defaultOptions | preventDefault = True } (Decode.succeed msg)
+
+
+{-| Find the first item with the matching `id` value.
+-}
+findById : a -> List { b | id : a } -> Maybe { b | id : a }
+findById id items =
+    case items of
+        [] ->
+            Nothing
+
+        x :: xs ->
+            if x.id == id then
+                Just x
+            else
+                findById id xs

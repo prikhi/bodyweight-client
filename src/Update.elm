@@ -6,6 +6,7 @@ import Model exposing (Model, initialModel)
 import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
+import Utils exposing (findById)
 
 
 {-| Update the Model's `route` when the URL changes.
@@ -37,8 +38,7 @@ update msg model =
             ( model, Navigation.newUrl <| reverse route )
 
         DeleteExerciseClicked exerciseId ->
-            List.filter (\x -> x.id == exerciseId) model.exercises
-                |> List.head
+            findById exerciseId model.exercises
                 |> Maybe.map (deleteExercise << .id)
                 |> Maybe.withDefault Cmd.none
                 |> \cmd -> ( model, cmd )
@@ -125,8 +125,7 @@ setExerciseForm : ExerciseId -> Model -> Model
 setExerciseForm id model =
     let
         newForm =
-            List.filter (\x -> x.id == id) model.exercises
-                |> List.head
+            findById id model.exercises
                 |> Maybe.withDefault initialExercise
     in
         { model | exerciseForm = newForm }
