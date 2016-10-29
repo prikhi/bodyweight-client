@@ -1,14 +1,12 @@
 module Main exposing (main)
 
-import Html.App exposing (program)
 import HttpBuilder exposing (..)
 import Json.Decode as Decode exposing ((:=))
 import Messages exposing (Msg(..), HttpMsg)
 import Model exposing (Model)
 import Models.Exercises exposing (Exercise, ExerciseId)
-import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import Navigation
-import String
+import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import Task
 import View exposing (view)
 
