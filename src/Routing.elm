@@ -1,6 +1,7 @@
 module Routing exposing (..)
 
 import Models.Exercises exposing (ExerciseId)
+import Models.Routines exposing (RoutineId)
 import Navigation
 import String
 import UrlParser exposing (..)
@@ -15,6 +16,7 @@ type Route
     | ExerciseRoute ExerciseId
     | ExerciseEditRoute ExerciseId
     | RoutinesRoute
+    | RoutineRoute RoutineId
     | NotFoundRoute
 
 
@@ -29,6 +31,7 @@ matchers =
         , format ExerciseEditRoute (s "exercises" </> int </> s "edit")
         , format ExerciseRoute (s "exercises" </> int)
         , format RoutinesRoute (s "routines" </> s "")
+        , format RoutineRoute (s "routines" </> int)
         ]
 
 
@@ -78,6 +81,9 @@ reverse route =
 
                     RoutinesRoute ->
                         "routines"
+
+                    RoutineRoute id ->
+                        routeToString RoutinesRoute ++ toString id
 
                     NotFoundRoute ->
                         ""

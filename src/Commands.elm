@@ -5,7 +5,7 @@ import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
 import Models.Exercises exposing (Exercise, ExerciseId, exerciseDecoder, exerciseEncoder)
-import Models.Routines exposing (routineDecoder)
+import Models.Routines exposing (RoutineId, routineDecoder)
 import Routing exposing (Route(..))
 import Task
 
@@ -32,6 +32,9 @@ fetchForRoute route =
 
         RoutinesRoute ->
             fetchRoutines
+
+        RoutineRoute id ->
+            fetchRoutine id
 
         NotFoundRoute ->
             Cmd.none
@@ -82,7 +85,7 @@ updateExercise exercise =
         |> Task.perform (CreateExercise << Err) (CreateExercise << Ok << .data)
 
 
-{-| Delete an Exercise.}
+{-| Delete an Exercise.
 -}
 deleteExercise : ExerciseId -> Cmd Msg
 deleteExercise exerciseId =
@@ -91,8 +94,15 @@ deleteExercise exerciseId =
         |> Task.perform (DeleteExercise << Err) (DeleteExercise << Ok << .data)
 
 
-{-| Fetch all the Routines
+{-| Fetch all the Routines.
 -}
 fetchRoutines : Cmd Msg
 fetchRoutines =
     fetch "routines" ("routine" := Decode.list routineDecoder) FetchRoutines
+
+
+{-| Fetch a single Routine.
+-}
+fetchRoutine : RoutineId -> Cmd Msg
+fetchRoutine routineId =
+    fetch ("routines/" ++ toString routineId) ("routine" := routineDecoder) FetchRoutine

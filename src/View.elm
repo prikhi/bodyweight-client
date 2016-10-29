@@ -7,7 +7,7 @@ import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
 import Utils exposing (onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
-import Views.Routines exposing (routinesPage)
+import Views.Routines exposing (routinesPage, routinePage)
 
 
 {-| Render the Navigation and Page Content
@@ -70,6 +70,12 @@ page ({ route, exercises, routines } as model) =
 
         RoutinesRoute ->
             routinesPage routines
+
+        RoutineRoute id ->
+            List.filter (\x -> x.id == id) routines
+                |> List.head
+                |> Maybe.map routinePage
+                |> Maybe.withDefault notFoundPage
 
 
 {-| Render the Home Page.

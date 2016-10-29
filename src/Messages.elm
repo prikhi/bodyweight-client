@@ -35,3 +35,4 @@ type Msg
     | CreateExercise (HttpMsg Exercise)
     | DeleteExercise (HttpMsg ExerciseId)
     | FetchRoutines (HttpMsg (List Routine))
+    | FetchRoutine (HttpMsg Routine)
