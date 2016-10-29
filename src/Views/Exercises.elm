@@ -23,8 +23,8 @@ exercisesPage exercises =
 
 {-| Render an Exercise's details.
 -}
-exercisePage : Exercise -> Html msg
-exercisePage ({ name, description } as exercise) =
+exercisePage : Exercise -> Html Msg
+exercisePage ({ id, name, description } as exercise) =
     let
         descriptionText =
             if String.isEmpty description then
@@ -36,7 +36,7 @@ exercisePage ({ name, description } as exercise) =
             [ h1 [] [ text name ]
             , button [] [ text "Edit" ]
             , text " "
-            , button [] [ text "Delete" ]
+            , button [ onClick <| DeleteExerciseClicked id ] [ text "Delete" ]
             , p [] [ text "TODO - Youtube Embed Here" ]
             , p []
                 [ b [] [ text <| exerciseType exercise ]

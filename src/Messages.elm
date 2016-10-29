@@ -25,9 +25,11 @@ type ExerciseFormMessage
 -}
 type Msg
     = NavigateTo Route
+    | DeleteExerciseClicked ExerciseId
     | ExerciseFormChange ExerciseFormMessage
     | SubmitExerciseForm
     | CancelExerciseForm
     | FetchExercises (HttpMsg (List Exercise))
     | FetchExercise (HttpMsg Exercise)
     | CreateExercise (HttpMsg Exercise)
+    | DeleteExercise (HttpMsg ExerciseId)

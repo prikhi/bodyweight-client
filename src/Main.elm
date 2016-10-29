@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Commands exposing (fetchForRoute, createExercise)
+import Commands exposing (fetchForRoute, createExercise, deleteExercise)
 import Messages exposing (Msg(..), HttpMsg, ExerciseFormMessage(..))
 import Model exposing (Model, initialModel)
 import Models.Exercises exposing (Exercise, initialExercise)
@@ -58,6 +58,13 @@ update msg model =
         NavigateTo route ->
             ( model, Navigation.newUrl <| reverse route )
 
+        DeleteExerciseClicked exerciseId ->
+            List.filter (\x -> x.id == exerciseId) model.exercises
+                |> List.head
+                |> Maybe.map (deleteExercise << .id)
+                |> Maybe.withDefault Cmd.none
+                |> \cmd -> ( model, cmd )
+
         ExerciseFormChange subMsg ->
             ( { model | exerciseForm = updateExerciseForm subMsg model }, Cmd.none )
 
@@ -85,6 +92,14 @@ update msg model =
             )
 
         CreateExercise (Err _) ->
+            ( model, Cmd.none )
+
+        DeleteExercise (Ok exerciseId) ->
+            ( { model | exercises = List.filter (\x -> x.id /= exerciseId) model.exercises }
+            , Navigation.newUrl <| reverse <| ExercisesRoute
+            )
+
+        DeleteExercise (Err _) ->
             ( model, Cmd.none )
 
 

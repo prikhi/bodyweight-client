@@ -1,6 +1,6 @@
 module Commands exposing (..)
 
-import HttpBuilder exposing (send, stringReader, jsonReader, get, post, withHeader, withJsonBody)
+import HttpBuilder exposing (send, stringReader, jsonReader, get, post, delete, withHeader, withJsonBody)
 import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
@@ -62,3 +62,12 @@ createExercise exercise =
         |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
         |> Task.perform (CreateExercise << Err) (CreateExercise << Ok << .data)
+
+
+{-| Delete an Exercise.}
+-}
+deleteExercise : ExerciseId -> Cmd Msg
+deleteExercise exerciseId =
+    delete ("/api/exercises/" ++ toString exerciseId)
+        |> send (jsonReader (Decode.succeed exerciseId)) stringReader
+        |> Task.perform (DeleteExercise << Err) (DeleteExercise << Ok << .data)
