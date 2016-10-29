@@ -9,11 +9,15 @@ import Utils exposing (onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage)
 
 
+{-| Render the Navigation and Page Content
+-}
 view : Model -> Html Msg
 view model =
     div [] [ nav, page model ]
 
 
+{-| Render the Nav Menu.
+-}
 nav : Html Msg
 nav =
     ul []
@@ -34,6 +38,8 @@ nav =
         ]
 
 
+{-| Render the Page Content using the current Route.
+-}
 page : Model -> Html Msg
 page { route, exercises } =
     case route of
@@ -53,6 +59,8 @@ page { route, exercises } =
                 |> Maybe.withDefault notFoundPage
 
 
+{-| Render the Home Page.
+-}
 homePage : Html msg
 homePage =
     div []
@@ -61,6 +69,8 @@ homePage =
         ]
 
 
+{-| Render the 404 Page.
+-}
 notFoundPage : Html msg
 notFoundPage =
     h1 [] [ text "404 - Not Found" ]

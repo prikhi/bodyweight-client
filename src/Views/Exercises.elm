@@ -9,6 +9,8 @@ import String
 import Utils exposing (onClickNoDefault)
 
 
+{-| Render a listing of Exercises
+-}
 exercisesPage : List Exercise -> Html Msg
 exercisesPage exercises =
     div []
@@ -17,6 +19,8 @@ exercisesPage exercises =
         ]
 
 
+{-| Render an Exercise's details.
+-}
 exercisePage : Exercise -> Html msg
 exercisePage ({ name, description } as exercise) =
     let
@@ -40,6 +44,8 @@ exercisePage ({ name, description } as exercise) =
             ]
 
 
+{-| Render Exercises as a table.
+-}
 exerciseTable : List Exercise -> Html Msg
 exerciseTable exercises =
     table []
@@ -53,6 +59,8 @@ exerciseTable exercises =
         ]
 
 
+{-| Render an Exercise as a table row.
+-}
 exerciseRow : Exercise -> Html Msg
 exerciseRow ({ id, name, isHold } as exercise) =
     tr []

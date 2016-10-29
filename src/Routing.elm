@@ -6,6 +6,8 @@ import String
 import UrlParser exposing (..)
 
 
+{-| The Route type encompasses all possible pages in the application.
+-}
 type Route
     = HomeRoute
     | ExercisesRoute
@@ -13,34 +15,40 @@ type Route
     | NotFoundRoute
 
 
+{-| Parse a URL into a Route.
+-}
 matchers : Parser (Route -> a) a
 matchers =
-    let
-        s =
-            UrlParser.s
-    in
-        oneOf
-            [ format HomeRoute (s "")
-            , format ExercisesRoute (s "exercises" </> s "")
-            , format ExerciseRoute (s "exercises" </> int)
-            ]
+    oneOf
+        [ format HomeRoute (s "")
+        , format ExercisesRoute (s "exercises" </> s "")
+        , format ExerciseRoute (s "exercises" </> int)
+        ]
 
 
+{-| Attempt to parse a Locaton's Hash into a Route.
+-}
 hashParser : Navigation.Location -> Result String Route
 hashParser location =
     location.hash |> String.dropLeft 1 |> parse identity matchers
 
 
+{-| The Hash Parser used by the application.
+-}
 parser : Navigation.Parser (Result String Route)
 parser =
     Navigation.makeParser hashParser
 
 
+{-| Pull a Route out of the parsed URL, defaulting to the `NotFoundRoute`.
+-}
 routeFromResult : Result String Route -> Route
 routeFromResult =
     Result.withDefault NotFoundRoute
 
 
+{-| Turn a Route into the URL the Route represents.
+-}
 reverse : Route -> String
 reverse route =
     let

@@ -8,6 +8,8 @@ import Routing exposing (Route(..))
 import Task
 
 
+{-| Return a command that fetches any relevant data for the Route.
+-}
 fetchForRoute : Route -> Cmd Msg
 fetchForRoute route =
     case route of
@@ -24,6 +26,8 @@ fetchForRoute route =
             Cmd.none
 
 
+{-| Fetch data from the backend server.
+-}
 fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
 fetch url decoder msg =
     get ("http://localhost:8080/" ++ url)
@@ -31,11 +35,15 @@ fetch url decoder msg =
         |> Task.perform (msg << Err) (msg << Ok << .data)
 
 
+{-| Fetch all the Exercises.
+-}
 fetchExercises : Cmd Msg
 fetchExercises =
     fetch "exercises" ("exercise" := Decode.list exerciseDecoder) FetchExercises
 
 
+{-| Fetch a single Exercise.
+-}
 fetchExercise : ExerciseId -> Cmd Msg
 fetchExercise id =
     fetch ("exercises/" ++ toString id) ("exercise" := exerciseDecoder) FetchExercise

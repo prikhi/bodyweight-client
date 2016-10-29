@@ -8,6 +8,8 @@ import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import View exposing (view)
 
 
+{-| Hook the update/view functions up to the initial model.
+-}
 main : Program Never
 main =
     Navigation.program parser
@@ -19,6 +21,8 @@ main =
         }
 
 
+{-| Generate the initial model & commands for the route.
+-}
 init : Result String Route -> ( Model, Cmd Msg )
 init result =
     let
@@ -28,10 +32,8 @@ init result =
         ( initialModel route, fetchForRoute route )
 
 
-
-{- Update -}
-
-
+{-| Update the Model's `route` when the URL changes.
+-}
 urlUpdate : Result String Route -> Model -> ( Model, Cmd Msg )
 urlUpdate result model =
     let

@@ -17,6 +17,8 @@ type alias Exercise =
     }
 
 
+{-| Decode a single `Exercise` from the backend.
+-}
 exerciseDecoder : Decode.Decoder Exercise
 exerciseDecoder =
     Decode.object6 Exercise
@@ -28,6 +30,8 @@ exerciseDecoder =
         ("youtubeIds" := Decode.string)
 
 
+{-| Return a string representation of the type of Exercise(Reps or Hold).
+-}
 exerciseType : Exercise -> String
 exerciseType { isHold } =
     if isHold then
