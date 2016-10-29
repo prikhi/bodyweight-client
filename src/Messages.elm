@@ -5,9 +5,11 @@ import Models.Exercises exposing (ExerciseId, Exercise)
 import Routing exposing (Route)
 
 
+type alias HttpMsg a =
+    Result (Error String) a
+
+
 type Msg
     = NavigateTo Route
-    | FetchExercisesSucceed (List Exercise)
-    | FetchExercisesFail (Error String)
-    | FetchExerciseSucceed Exercise
-    | FetchExerciseFail (Error String)
+    | FetchExercises (HttpMsg (List Exercise))
+    | FetchExercise (HttpMsg Exercise)
