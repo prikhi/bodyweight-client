@@ -95,6 +95,12 @@ update msg model =
         DeleteExercise (Err _) ->
             ( model, Cmd.none )
 
+        FetchRoutines (Ok newRoutines) ->
+            ( { model | routines = newRoutines }, Cmd.none )
+
+        FetchRoutines (Err _) ->
+            ( model, Cmd.none )
+
 
 {-| Set the Exercise Form to the Exercise with the specified Id.
 -}

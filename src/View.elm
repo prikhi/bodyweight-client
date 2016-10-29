@@ -7,6 +7,7 @@ import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
 import Utils exposing (onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
+import Views.Routines exposing (routinesPage)
 
 
 {-| Render the Navigation and Page Content
@@ -33,13 +34,15 @@ nav =
                 , ul []
                     [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
                 ]
+            , li []
+                [ navLink "Routines" RoutinesRoute ]
             ]
 
 
 {-| Render the Page Content using the current Route.
 -}
 page : Model -> Html Msg
-page ({ route, exercises } as model) =
+page ({ route, exercises, routines } as model) =
     case route of
         HomeRoute ->
             homePage
@@ -64,6 +67,9 @@ page ({ route, exercises } as model) =
                 |> List.head
                 |> Maybe.map (always <| exerciseForm model)
                 |> Maybe.withDefault notFoundPage
+
+        RoutinesRoute ->
+            routinesPage routines
 
 
 {-| Render the Home Page.

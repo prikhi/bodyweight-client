@@ -5,6 +5,7 @@ import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
 import Models.Exercises exposing (Exercise, ExerciseId, exerciseDecoder, exerciseEncoder)
+import Models.Routines exposing (routineDecoder)
 import Routing exposing (Route(..))
 import Task
 
@@ -28,6 +29,9 @@ fetchForRoute route =
 
         ExerciseEditRoute id ->
             fetchExercise id
+
+        RoutinesRoute ->
+            fetchRoutines
 
         NotFoundRoute ->
             Cmd.none
@@ -85,3 +89,10 @@ deleteExercise exerciseId =
     delete ("/api/exercises/" ++ toString exerciseId)
         |> send (jsonReader (Decode.succeed exerciseId)) stringReader
         |> Task.perform (DeleteExercise << Err) (DeleteExercise << Ok << .data)
+
+
+{-| Fetch all the Routines
+-}
+fetchRoutines : Cmd Msg
+fetchRoutines =
+    fetch "routines" ("routine" := Decode.list routineDecoder) FetchRoutines
