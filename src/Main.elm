@@ -1,13 +1,10 @@
 module Main exposing (main)
 
-import HttpBuilder exposing (..)
-import Json.Decode as Decode exposing ((:=))
+import Commands exposing (fetchForRoute)
 import Messages exposing (Msg(..), HttpMsg)
 import Model exposing (Model)
-import Models.Exercises exposing (Exercise, ExerciseId)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
-import Task
 import View exposing (view)
 
 
@@ -29,50 +26,6 @@ init result =
             routeFromResult result
     in
         ( { exercises = [], route = route }, fetchForRoute route )
-
-
-fetchForRoute : Route -> Cmd Msg
-fetchForRoute route =
-    case route of
-        HomeRoute ->
-            Cmd.none
-
-        ExercisesRoute ->
-            fetchExercises
-
-        ExerciseRoute id ->
-            fetchExercise id
-
-        NotFoundRoute ->
-            Cmd.none
-
-
-fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
-fetch url decoder msg =
-    get ("http://localhost:8080/" ++ url)
-        |> send (jsonReader decoder) stringReader
-        |> Task.perform (msg << Err) (msg << Ok << .data)
-
-
-fetchExercises : Cmd Msg
-fetchExercises =
-    fetch "exercises" ("exercise" := Decode.list exerciseDecoder) FetchExercises
-
-
-fetchExercise : ExerciseId -> Cmd Msg
-fetchExercise id =
-    fetch ("exercises/" ++ toString id) ("exercise" := exerciseDecoder) FetchExercise
-
-
-exerciseDecoder : Decode.Decoder Exercise
-exerciseDecoder =
-    Decode.object6 Exercise
-        ("id" := Decode.int)
-        ("name" := Decode.string)
-        ("description" := Decode.string)
-        ("isHold" := Decode.bool)
-        ("amazonIds" := Decode.string)
-        ("youtubeIds" := Decode.string)
 
 
 
