@@ -16,6 +16,9 @@ type alias HttpMsg a =
 type ExerciseFormMessage
     = NameChange String
     | DescriptionChange String
+    | IsHoldChange Bool
+    | YoutubeChange String
+    | AmazonChange String
 
 
 {-| All Messages used in the application.

@@ -2,7 +2,7 @@ module Views.Exercises exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (href, name, value, checked, type')
-import Html.Events exposing (onInput, onClick)
+import Html.Events exposing (onInput, onClick, onCheck, onSubmit)
 import Messages exposing (Msg(..), ExerciseFormMessage(..))
 import Model exposing (Model)
 import Models.Exercises exposing (Exercise, exerciseType)
@@ -57,7 +57,7 @@ exerciseForm { exerciseForm } =
             else
                 "Edit Exercise"
     in
-        div []
+        form [ onSubmit SubmitExerciseForm ]
             [ h1 [] [ text titleText ]
             , label []
                 [ text "Name: "
@@ -82,20 +82,36 @@ exerciseForm { exerciseForm } =
             , br [] []
             , label []
                 [ text "Is Hold? "
-                , input [ type' "checkbox", checked exerciseForm.isHold ] []
+                , input
+                    [ name "is-hold"
+                    , type' "checkbox"
+                    , checked exerciseForm.isHold
+                    , onCheck (ExerciseFormChange << IsHoldChange)
+                    ]
+                    []
                 ]
             , br [] []
             , label []
                 [ text "Youtube ID: "
-                , input [ name "youtube", value exerciseForm.youtubeIds ] []
+                , input
+                    [ name "youtube"
+                    , value exerciseForm.youtubeIds
+                    , onInput (ExerciseFormChange << YoutubeChange)
+                    ]
+                    []
                 ]
             , br [] []
             , label []
                 [ text "Amazon ID: "
-                , input [ name "amazon", value exerciseForm.amazonIds ] []
+                , input
+                    [ name "amazon"
+                    , value exerciseForm.amazonIds
+                    , onInput (ExerciseFormChange << AmazonChange)
+                    ]
+                    []
                 ]
             , p []
-                [ button [ onClick SubmitExerciseForm ] [ text "Save" ]
+                [ input [ type' "submit" ] [ text "Save" ]
                 , text " "
                 , button [ onClick CancelExerciseForm ] [ text "Cancel" ]
                 ]

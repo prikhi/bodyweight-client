@@ -3,7 +3,7 @@ module Main exposing (main)
 import Commands exposing (fetchForRoute, createExercise)
 import Messages exposing (Msg(..), HttpMsg, ExerciseFormMessage(..))
 import Model exposing (Model, initialModel)
-import Models.Exercises exposing (initialExercise)
+import Models.Exercises exposing (Exercise, initialExercise)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import View exposing (view)
@@ -62,7 +62,7 @@ update msg model =
             ( model, Navigation.newUrl <| reverse route )
 
         ExerciseFormChange subMsg ->
-            updateExerciseForm subMsg model
+            ( { model | exerciseForm = updateExerciseForm subMsg model }, Cmd.none )
 
         SubmitExerciseForm ->
             ( model, createExercise model.exerciseForm )
@@ -91,15 +91,22 @@ update msg model =
             ( model, Cmd.none )
 
 
-updateExerciseForm : ExerciseFormMessage -> Model -> ( Model, Cmd msg )
+{-| Update the Exercise Form when a field has changed.
+-}
+updateExerciseForm : ExerciseFormMessage -> Model -> Exercise
 updateExerciseForm msg ({ exerciseForm } as model) =
-    let
-        updatedForm =
-            case msg of
-                NameChange newName ->
-                    { exerciseForm | name = newName }
+    case msg of
+        NameChange newName ->
+            { exerciseForm | name = newName }
 
-                DescriptionChange newDescription ->
-                    { exerciseForm | description = newDescription }
-    in
-        ( { model | exerciseForm = updatedForm }, Cmd.none )
+        DescriptionChange newDescription ->
+            { exerciseForm | description = newDescription }
+
+        IsHoldChange newHold ->
+            { exerciseForm | isHold = newHold }
+
+        YoutubeChange newYoutube ->
+            { exerciseForm | youtubeIds = newYoutube }
+
+        AmazonChange newAmazon ->
+            { exerciseForm | amazonIds = newAmazon }
