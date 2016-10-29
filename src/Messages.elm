@@ -2,7 +2,7 @@ module Messages exposing (..)
 
 import HttpBuilder exposing (Error)
 import Models.Exercises exposing (ExerciseId, Exercise)
-import Models.Routines exposing (Routine)
+import Models.Routines exposing (RoutineId, Routine)
 import Routing exposing (Route)
 
 
@@ -34,5 +34,7 @@ type Msg
     | FetchExercise (HttpMsg Exercise)
     | CreateExercise (HttpMsg Exercise)
     | DeleteExercise (HttpMsg ExerciseId)
+    | DeleteRoutineClicked RoutineId
     | FetchRoutines (HttpMsg (List Routine))
     | FetchRoutine (HttpMsg Routine)
+    | DeleteRoutine (HttpMsg RoutineId)

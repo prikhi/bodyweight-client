@@ -1,6 +1,6 @@
 module Update exposing (urlUpdate, update)
 
-import Commands exposing (fetchForRoute, createExercise, updateExercise, deleteExercise)
+import Commands exposing (fetchForRoute, createExercise, updateExercise, deleteExercise, deleteRoutine)
 import Messages exposing (Msg(..), HttpMsg, ExerciseFormMessage(..))
 import Model exposing (Model, initialModel)
 import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
@@ -89,11 +89,14 @@ update msg model =
 
         DeleteExercise (Ok exerciseId) ->
             ( { model | exercises = List.filter (\x -> x.id /= exerciseId) model.exercises }
-            , Navigation.newUrl <| reverse <| ExercisesRoute
+            , Navigation.newUrl <| reverse ExercisesRoute
             )
 
         DeleteExercise (Err _) ->
             ( model, Cmd.none )
+
+        DeleteRoutineClicked id ->
+            ( model, deleteRoutine id )
 
         FetchRoutines (Ok newRoutines) ->
             ( { model | routines = newRoutines }, Cmd.none )
@@ -105,6 +108,14 @@ update msg model =
             ( { model | routines = newRoutine :: model.routines }, Cmd.none )
 
         FetchRoutine (Err _) ->
+            ( model, Cmd.none )
+
+        DeleteRoutine (Ok routineId) ->
+            ( { model | routines = List.filter (\x -> x.id /= routineId) model.routines }
+            , Navigation.newUrl <| reverse RoutinesRoute
+            )
+
+        DeleteRoutine (Err _) ->
             ( model, Cmd.none )
 
 

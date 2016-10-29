@@ -1,6 +1,7 @@
 module Views.Routines exposing (..)
 
 import Html exposing (..)
+import Html.Events exposing (onClick)
 import Html.Attributes exposing (href)
 import Messages exposing (Msg(..))
 import Models.Routines exposing (Routine)
@@ -21,9 +22,11 @@ routinesPage routines =
 {-| Render the details of a single `Routine`.
 -}
 routinePage : Routine -> Html Msg
-routinePage { name } =
+routinePage { id, name } =
     div []
-        [ h1 [] [ text name ] ]
+        [ h1 [] [ text name ]
+        , button [ onClick <| DeleteRoutineClicked id ] [ text "Delete" ]
+        ]
 
 
 {-| Render a table of Routines.

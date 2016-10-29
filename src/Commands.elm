@@ -1,6 +1,6 @@
 module Commands exposing (..)
 
-import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, delete, withHeader, withJsonBody)
+import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, withHeader, withJsonBody)
 import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
@@ -40,13 +40,27 @@ fetchForRoute route =
             Cmd.none
 
 
+performApiRequest : (Result a b -> msg) -> Task.Task a (HttpBuilder.Response b) -> Cmd msg
+performApiRequest msg =
+    Task.perform (msg << Err) (msg << Ok << .data)
+
+
 {-| Fetch data from the backend server.
 -}
 fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
 fetch url decoder msg =
     get ("/api/" ++ url)
         |> send (jsonReader decoder) stringReader
-        |> Task.perform (msg << Err) (msg << Ok << .data)
+        |> performApiRequest msg
+
+
+{-| Delete a resource from the backend server.
+-}
+delete : String -> Int -> (HttpMsg Int -> msg) -> Cmd msg
+delete url id msg =
+    HttpBuilder.delete ("/api/" ++ url ++ "/" ++ toString id)
+        |> send (jsonReader (Decode.succeed id)) stringReader
+        |> performApiRequest msg
 
 
 {-| Fetch all the Exercises.
@@ -71,7 +85,7 @@ createExercise exercise =
         |> withHeader "Content-Type" "application/json"
         |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
-        |> Task.perform (CreateExercise << Err) (CreateExercise << Ok << .data)
+        |> performApiRequest CreateExercise
 
 
 {-| Update an Exercise.
@@ -82,16 +96,14 @@ updateExercise exercise =
         |> withHeader "Content-Type" "application/json"
         |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
-        |> Task.perform (CreateExercise << Err) (CreateExercise << Ok << .data)
+        |> performApiRequest CreateExercise
 
 
 {-| Delete an Exercise.
 -}
 deleteExercise : ExerciseId -> Cmd Msg
 deleteExercise exerciseId =
-    delete ("/api/exercises/" ++ toString exerciseId)
-        |> send (jsonReader (Decode.succeed exerciseId)) stringReader
-        |> Task.perform (DeleteExercise << Err) (DeleteExercise << Ok << .data)
+    delete "exercises" exerciseId DeleteExercise
 
 
 {-| Fetch all the Routines.
@@ -106,3 +118,10 @@ fetchRoutines =
 fetchRoutine : RoutineId -> Cmd Msg
 fetchRoutine routineId =
     fetch ("routines/" ++ toString routineId) ("routine" := routineDecoder) FetchRoutine
+
+
+{-| Delete a Routine.
+-}
+deleteRoutine : RoutineId -> Cmd Msg
+deleteRoutine routineId =
+    delete "routines" routineId DeleteRoutine
