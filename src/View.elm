@@ -20,22 +20,18 @@ view model =
 -}
 nav : Html Msg
 nav =
-    ul []
-        [ li []
-            [ a
-                [ href <| reverse HomeRoute
-                , onClickNoDefault <| NavigateTo HomeRoute
+    let
+        navLink content route =
+            a [ href <| reverse route, onClickNoDefault <| NavigateTo route ]
+                [ text content ]
+    in
+        ul []
+            [ li []
+                [ navLink "Home" HomeRoute ]
+            , li []
+                [ navLink "Exercises" ExercisesRoute
                 ]
-                [ text "Home" ]
             ]
-        , li []
-            [ a
-                [ href <| reverse ExercisesRoute
-                , onClickNoDefault <| NavigateTo ExercisesRoute
-                ]
-                [ text "Exercises" ]
-            ]
-        ]
 
 
 {-| Render the Page Content using the current Route.
