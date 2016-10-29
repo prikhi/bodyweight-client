@@ -1,7 +1,7 @@
 module Views.Exercises exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href, name, value, checked, type')
+import Html.Attributes exposing (href, name, value, checked, type', width, height, src, attribute)
 import Html.Events exposing (onInput, onClick, onCheck, onSubmit)
 import Messages exposing (Msg(..), ExerciseFormMessage(..))
 import Model exposing (Model)
@@ -31,18 +31,50 @@ exercisePage ({ id, name, description } as exercise) =
                 ""
             else
                 " - " ++ description
+
+        youtubeIframe =
+            if String.isEmpty exercise.youtubeIds then
+                text ""
+            else
+                p []
+                    [ iframe
+                        [ type' "text/html"
+                        , width 516
+                        , height 315
+                        , src <| "https://www.youtube.com/embed/" ++ exercise.youtubeIds
+                        , attribute "frameborder" "0"
+                        , attribute "allowfullscreen" ""
+                        ]
+                        []
+                    ]
+
+        amazonIframe =
+            if String.isEmpty exercise.amazonIds then
+                text ""
+            else
+                p []
+                    [ iframe
+                        [ attribute "frameborder" "0"
+                        , attribute "marginheight" "0"
+                        , attribute "marginwidth" "0"
+                        , attribute "scrolling" "no"
+                        , src exercise.amazonIds
+                        , attribute "style" "width:120px;height:240px;"
+                        ]
+                        []
+                    ]
     in
         div []
             [ h1 [] [ text name ]
             , button [ onClick <| NavigateTo <| ExerciseEditRoute id ] [ text "Edit" ]
             , text " "
             , button [ onClick <| DeleteExerciseClicked id ] [ text "Delete" ]
-            , p [] [ text "TODO - Youtube Embed Here" ]
+            , youtubeIframe
             , p []
                 [ b [] [ text <| exerciseType exercise ]
                 , text descriptionText
                 ]
-            , p [] [ text "TODO - Amazon Links Here" ]
+            , amazonIframe
             ]
 
 
