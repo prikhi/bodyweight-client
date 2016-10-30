@@ -8,7 +8,7 @@ import Model exposing (Model)
 import Models.Exercises exposing (Exercise, exerciseType)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (onClickNoDefault)
+import Utils exposing (onClickNoDefault, formField, textField)
 
 
 {-| Render a listing of Exercises
@@ -89,28 +89,19 @@ exerciseForm { exerciseForm } =
             else
                 "Edit Exercise"
 
-        formField labelText field =
-            label [] [ text labelText, field ]
-
-        textField labelText inputName selector msg =
-            formField (labelText ++ ": ") <|
-                input
-                    [ name inputName
-                    , value <| selector exerciseForm
-                    , onInput (ExerciseFormChange << msg)
-                    ]
-                    []
+        formMsg msg =
+            ExerciseFormChange << msg
     in
         form [ onSubmit SubmitExerciseForm ]
             [ h1 [] [ text titleText ]
-            , textField "Name" "name" .name NameChange
+            , textField "Name" "name" exerciseForm.name <| formMsg NameChange
             , br [] []
             , formField "Description: " <|
                 div []
                     [ textarea
                         [ name "description"
                         , value exerciseForm.description
-                        , onInput (ExerciseFormChange << DescriptionChange)
+                        , onInput <| formMsg DescriptionChange
                         ]
                         []
                     ]
@@ -119,13 +110,15 @@ exerciseForm { exerciseForm } =
                     [ name "is-hold"
                     , type' "checkbox"
                     , checked exerciseForm.isHold
-                    , onCheck (ExerciseFormChange << IsHoldChange)
+                    , onCheck <| formMsg IsHoldChange
                     ]
                     []
             , br [] []
-            , textField "Youtube ID" "youtube" .youtubeIds YoutubeChange
+            , textField "Youtube ID" "youtube" exerciseForm.youtubeIds <|
+                formMsg YoutubeChange
             , br [] []
-            , textField "Amazon ID" "amazon" .amazonIds AmazonChange
+            , textField "Amazon ID" "amazon" exerciseForm.amazonIds <|
+                formMsg AmazonChange
             , p []
                 [ input [ type' "submit", value "Save" ] []
                 , text " "

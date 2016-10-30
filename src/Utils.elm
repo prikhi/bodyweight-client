@@ -1,7 +1,8 @@
 module Utils exposing (..)
 
-import Html exposing (Attribute)
-import Html.Events exposing (onWithOptions, defaultOptions, on)
+import Html exposing (Html, Attribute, label, input, text)
+import Html.Attributes exposing (name, value)
+import Html.Events exposing (onWithOptions, defaultOptions, on, onInput)
 import Json.Decode as Decode exposing ((:=))
 
 
@@ -25,3 +26,23 @@ findById id items =
                 Just x
             else
                 findById id xs
+
+
+{-| Render an input field with some label text.
+-}
+formField : String -> Html msg -> Html msg
+formField labelText field =
+    label [] [ text labelText, field ]
+
+
+{-| Render a text input field.
+-}
+textField : String -> String -> String -> (String -> msg) -> Html msg
+textField labelText inputName inputValue msg =
+    formField (labelText ++ ": ") <|
+        input
+            [ name inputName
+            , value inputValue
+            , onInput msg
+            ]
+            []
