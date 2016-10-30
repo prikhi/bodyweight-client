@@ -35,6 +35,10 @@ type Msg
     | CreateExercise (HttpMsg Exercise)
     | DeleteExercise (HttpMsg ExerciseId)
     | DeleteRoutineClicked RoutineId
+    | RoutineFormNameChange String
+    | SubmitRoutineForm
+    | CancelRoutineForm
     | FetchRoutines (HttpMsg (List Routine))
     | FetchRoutine (HttpMsg Routine)
+    | CreateRoutine (HttpMsg Routine)
     | DeleteRoutine (HttpMsg RoutineId)

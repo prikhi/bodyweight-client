@@ -1,9 +1,10 @@
 module Update exposing (urlUpdate, update)
 
-import Commands exposing (fetchForRoute, createExercise, updateExercise, deleteExercise, deleteRoutine)
+import Commands exposing (fetchForRoute, createExercise, updateExercise, deleteExercise, createRoutine, deleteRoutine)
 import Messages exposing (Msg(..), HttpMsg, ExerciseFormMessage(..))
 import Model exposing (Model, initialModel)
 import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
+import Models.Routines exposing (initialRoutine)
 import Navigation
 import Routing exposing (Route(..), routeFromResult, reverse, parser)
 import Utils exposing (findById)
@@ -24,6 +25,9 @@ urlUpdate result model =
 
                 ExerciseEditRoute id ->
                     setExerciseForm id model
+
+                RoutineAddRoute ->
+                    { model | routineForm = initialRoutine }
 
                 _ ->
                     model
@@ -98,6 +102,22 @@ update msg model =
         DeleteRoutineClicked id ->
             ( model, deleteRoutine id )
 
+        RoutineFormNameChange newName ->
+            let
+                form =
+                    model.routineForm
+
+                updatedForm =
+                    { form | name = newName }
+            in
+                ( { model | routineForm = updatedForm }, Cmd.none )
+
+        SubmitRoutineForm ->
+            ( model, createRoutine model.routineForm )
+
+        CancelRoutineForm ->
+            ( model, Navigation.newUrl <| reverse <| RoutinesRoute )
+
         FetchRoutines (Ok newRoutines) ->
             ( { model | routines = newRoutines }, Cmd.none )
 
@@ -108,6 +128,14 @@ update msg model =
             ( { model | routines = newRoutine :: model.routines }, Cmd.none )
 
         FetchRoutine (Err _) ->
+            ( model, Cmd.none )
+
+        CreateRoutine (Ok newRoutine) ->
+            ( { model | routines = newRoutine :: model.routines }
+            , Navigation.newUrl <| reverse <| RoutineRoute newRoutine.id
+            )
+
+        CreateRoutine (Err _) ->
             ( model, Cmd.none )
 
         DeleteRoutine (Ok routineId) ->

@@ -1,12 +1,12 @@
 module Views.Routines exposing (..)
 
 import Html exposing (..)
-import Html.Events exposing (onClick)
-import Html.Attributes exposing (href)
+import Html.Events exposing (onClick, onSubmit)
+import Html.Attributes exposing (href, type', value)
 import Messages exposing (Msg(..))
 import Models.Routines exposing (Routine)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (onClickNoDefault)
+import Utils exposing (onClickNoDefault, textField)
 
 
 {-| Render a listing of Routines.
@@ -51,5 +51,22 @@ routineRow { id, name } =
                 , onClickNoDefault <| NavigateTo <| RoutineRoute id
                 ]
                 [ text name ]
+            ]
+        ]
+
+
+{-| Render the form for creating an initial Routine before adding Exercises.
+-}
+addRoutineForm : Routine -> Html Msg
+addRoutineForm routineForm =
+    div []
+        [ h1 [] [ text "Add Routine" ]
+        , form [ onSubmit SubmitRoutineForm ]
+            [ textField "Name" "name" routineForm.name RoutineFormNameChange
+            , p []
+                [ input [ type' "submit", value "Save" ] []
+                , text " "
+                , button [ onClick CancelRoutineForm ] [ text "Cancel" ]
+                ]
             ]
         ]

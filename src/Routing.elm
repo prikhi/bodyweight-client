@@ -16,6 +16,7 @@ type Route
     | ExerciseRoute ExerciseId
     | ExerciseEditRoute ExerciseId
     | RoutinesRoute
+    | RoutineAddRoute
     | RoutineRoute RoutineId
     | NotFoundRoute
 
@@ -31,6 +32,7 @@ matchers =
         , format ExerciseEditRoute (s "exercises" </> int </> s "edit")
         , format ExerciseRoute (s "exercises" </> int)
         , format RoutinesRoute (s "routines" </> s "")
+        , format RoutineAddRoute (s "routines" </> s "add")
         , format RoutineRoute (s "routines" </> int)
         ]
 
@@ -81,6 +83,9 @@ reverse route =
 
                     RoutinesRoute ->
                         "routines"
+
+                    RoutineAddRoute ->
+                        routeToString RoutinesRoute ++ "add"
 
                     RoutineRoute id ->
                         routeToString RoutinesRoute ++ toString id

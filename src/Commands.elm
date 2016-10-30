@@ -5,7 +5,7 @@ import Json.Decode as Decode exposing ((:=))
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
 import Models.Exercises exposing (Exercise, ExerciseId, exerciseDecoder, exerciseEncoder)
-import Models.Routines exposing (RoutineId, routineDecoder)
+import Models.Routines exposing (Routine, RoutineId, routineDecoder, routineEncoder)
 import Routing exposing (Route(..))
 import Task
 
@@ -32,6 +32,9 @@ fetchForRoute route =
 
         RoutinesRoute ->
             fetchRoutines
+
+        RoutineAddRoute ->
+            Cmd.none
 
         RoutineRoute id ->
             fetchRoutine id
@@ -128,6 +131,16 @@ fetchRoutines =
 fetchRoutine : RoutineId -> Cmd Msg
 fetchRoutine routineId =
     fetch ("routines/" ++ toString routineId) ("routine" := routineDecoder) FetchRoutine
+
+
+{-| Create a Routine.
+-}
+createRoutine : Routine -> Cmd Msg
+createRoutine routine =
+    create "routines"
+        (Encode.object [ ( "routine", routineEncoder routine ) ])
+        ("routine" := routineDecoder)
+        CreateRoutine
 
 
 {-| Delete a Routine.

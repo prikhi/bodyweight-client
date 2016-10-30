@@ -7,7 +7,7 @@ import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
 import Utils exposing (findById, onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
-import Views.Routines exposing (routinesPage, routinePage)
+import Views.Routines exposing (routinesPage, routinePage, addRoutineForm)
 
 
 {-| Render the Navigation and Page Content
@@ -35,7 +35,10 @@ nav =
                     [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
                 ]
             , li []
-                [ navLink "Routines" RoutinesRoute ]
+                [ navLink "Routines" RoutinesRoute
+                , ul []
+                    [ li [] [ navLink "Add Routine" RoutineAddRoute ] ]
+                ]
             ]
 
 
@@ -68,6 +71,9 @@ page ({ route, exercises, routines } as model) =
 
         RoutinesRoute ->
             routinesPage routines
+
+        RoutineAddRoute ->
+            addRoutineForm model.routineForm
 
         RoutineRoute id ->
             findById id routines
