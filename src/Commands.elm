@@ -54,6 +54,17 @@ fetch url decoder msg =
         |> performApiRequest msg
 
 
+{-| Create data on the backend server.
+-}
+create : String -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
+create url jsonValue decoder msg =
+    post ("/api/" ++ url)
+        |> withHeader "Content-Type" "application/json"
+        |> withJsonBody jsonValue
+        |> send (jsonReader decoder) stringReader
+        |> performApiRequest msg
+
+
 {-| Delete a resource from the backend server.
 -}
 delete : String -> Int -> (HttpMsg Int -> msg) -> Cmd msg
@@ -81,11 +92,10 @@ fetchExercise id =
 -}
 createExercise : Exercise -> Cmd Msg
 createExercise exercise =
-    post ("/api/exercises/")
-        |> withHeader "Content-Type" "application/json"
-        |> withJsonBody (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
-        |> send (jsonReader ("exercise" := exerciseDecoder)) stringReader
-        |> performApiRequest CreateExercise
+    create "exercises"
+        (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
+        ("exercise" := exerciseDecoder)
+        CreateExercise
 
 
 {-| Update an Exercise.
