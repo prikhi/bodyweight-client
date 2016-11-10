@@ -94,7 +94,7 @@ exerciseForm { exerciseForm } =
     in
         form [ onSubmit SubmitExerciseForm ]
             [ h1 [] [ text titleText ]
-            , textField "Name" "name" exerciseForm.name <| formMsg NameChange
+            , textField "Name" "name" exerciseForm.name <| formMsg ExerciseNameChange
             , br [] []
             , formField "Description: " <|
                 div []

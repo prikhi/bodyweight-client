@@ -11,6 +11,8 @@ type alias RoutineId =
 type alias Routine =
     { id : RoutineId
     , name : String
+    , copyright : String
+    , isPublic : Bool
     }
 
 
@@ -20,6 +22,8 @@ initialRoutine : Routine
 initialRoutine =
     { id = 0
     , name = ""
+    , copyright = ""
+    , isPublic = True
     }
 
 
@@ -27,17 +31,19 @@ initialRoutine =
 -}
 routineDecoder : Decode.Decoder Routine
 routineDecoder =
-    Decode.object2 Routine
+    Decode.object4 Routine
         ("id" := Decode.int)
         ("name" := Decode.string)
+        ("copyright" := Decode.string)
+        ("isPublic" := Decode.bool)
 
 
 {-| Encode a single `Routine` for the backend.
 -}
 routineEncoder : Routine -> Encode.Value
-routineEncoder { name } =
+routineEncoder { name, copyright, isPublic } =
     Encode.object
         [ ( "name", Encode.string name )
-        , ( "isPublic", Encode.bool True )
-        , ( "copyright", Encode.string "" )
+        , ( "isPublic", Encode.bool isPublic )
+        , ( "copyright", Encode.string copyright )
         ]

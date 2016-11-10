@@ -7,7 +7,7 @@ import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
 import Utils exposing (findById, onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
-import Views.Routines exposing (routinesPage, routinePage, addRoutineForm)
+import Views.Routines exposing (routinesPage, routinePage, addRoutineForm, editRoutineForm)
 
 
 {-| Render the Navigation and Page Content
@@ -80,6 +80,11 @@ page ({ route, exercises, routines } as model) =
                 |> Maybe.map routinePage
                 |> Maybe.withDefault notFoundPage
 
+        RoutineEditRoute id ->
+            findById id routines
+                |> Maybe.map (always <| editRoutineForm model)
+                |> Maybe.withDefault notFoundPage
+
 
 {-| Render the Home Page.
 -}
@@ -87,7 +92,7 @@ homePage : Html msg
 homePage =
     div []
         [ h1 [] [ text "Home" ]
-        , p [] [ text "Welcome to BodyWeightLogger." ]
+        , p [] [ text "Welcome to BodyWeightLogger.", text "test em dubs" ]
         ]
 
 
