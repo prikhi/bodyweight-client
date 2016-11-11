@@ -19,6 +19,12 @@ npm run dev
 open http://localhost:7000
 ```
 
+# Tests
+
+```
+npm run test-watch
+```
+
 # License
 
 GPL-3.0
