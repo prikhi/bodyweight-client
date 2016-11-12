@@ -2,16 +2,16 @@ module Views.Routines exposing (..)
 
 import Array exposing (Array)
 import Html exposing (..)
-import Html.Attributes exposing (href, type', value, name, selected, checked)
+import Html.Attributes exposing (type', value, name, selected, checked)
 import Html.Events exposing (onClick, onSubmit, onInput, onCheck)
 import Html.Keyed as Keyed
-import Messages exposing (Msg(..), RoutineFormMessage(..), SectionFormMessage(..), SectionExerciseFormMessage(..))
+import Messages exposing (..)
 import Model exposing (Model)
 import Models.Exercises exposing (Exercise, ExerciseId)
 import Models.Routines exposing (Routine)
 import Models.Sections exposing (Section, SectionExercise, SectionForm)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (onClickNoDefault, onSelectInt, findById, textField, intField)
+import Utils exposing (onSelectInt, findById, textField, intField, navLink)
 
 
 {-| Render a listing of Routines.
@@ -51,15 +51,7 @@ routineTable routines =
 -}
 routineRow : Routine -> Html Msg
 routineRow { id, name } =
-    tr []
-        [ td []
-            [ a
-                [ href <| reverse <| RoutineRoute id
-                , onClickNoDefault <| NavigateTo <| RoutineRoute id
-                ]
-                [ text name ]
-            ]
-        ]
+    tr [] [ td [] [ navLink name <| RoutineRoute id ] ]
 
 
 {-| Render the form for creating an initial Routine before adding Exercises.

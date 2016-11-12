@@ -8,7 +8,7 @@ import Model exposing (Model)
 import Models.Exercises exposing (Exercise, exerciseType)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (onClickNoDefault, formField, textField)
+import Utils exposing (formField, textField, navLink)
 
 
 {-| Render a listing of Exercises
@@ -147,14 +147,6 @@ exerciseTable exercises =
 exerciseRow : Exercise -> Html Msg
 exerciseRow ({ id, name, isHold } as exercise) =
     tr []
-        [ td []
-            [ a
-                [ href <| reverse <| ExerciseRoute id
-                , onClickNoDefault <| NavigateTo <| ExerciseRoute id
-                ]
-                [ text name ]
-            ]
-        , td []
-            [ text <| exerciseType exercise
-            ]
+        [ td [] [ navLink name <| ExerciseRoute id ]
+        , td [] [ text <| exerciseType exercise ]
         ]

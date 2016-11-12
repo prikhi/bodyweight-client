@@ -1,10 +1,12 @@
 module Utils exposing (..)
 
 import Array exposing (Array)
-import Html exposing (Html, Attribute, label, input, text)
-import Html.Attributes exposing (name, value, type')
+import Html exposing (Html, Attribute, label, input, text, a)
+import Html.Attributes exposing (name, value, type', href)
 import Html.Events exposing (onWithOptions, defaultOptions, on, onInput, targetValue)
 import Json.Decode as Decode exposing ((:=))
+import Messages exposing (Msg(NavigateTo))
+import Routing exposing (Route, reverse)
 import String
 
 
@@ -42,6 +44,14 @@ onSelectInt msg =
 onInputInt : (Int -> msg) -> Attribute msg
 onInputInt msg =
     on "input" (Decode.map msg targetValueIntDecoder)
+
+
+{-| Create a link to an internal Route using some text.
+-}
+navLink : String -> Route -> Html Msg
+navLink content route =
+    a [ href <| reverse route, onClickNoDefault <| NavigateTo route ]
+        [ text content ]
 
 
 {-| Find the first item with the matching `id` value.

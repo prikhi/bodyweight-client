@@ -1,11 +1,10 @@
 module View exposing (view)
 
 import Html exposing (Html, div, ul, li, text, h1, p, a)
-import Html.Attributes exposing (href)
 import Messages exposing (Msg(..))
 import Model exposing (Model)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (findById, onClickNoDefault)
+import Utils exposing (findById, navLink)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
 import Views.Routines exposing (routinesPage, routinePage, addRoutineForm, editRoutineForm)
 
@@ -21,25 +20,20 @@ view model =
 -}
 nav : Html Msg
 nav =
-    let
-        navLink content route =
-            a [ href <| reverse route, onClickNoDefault <| NavigateTo route ]
-                [ text content ]
-    in
-        ul []
-            [ li []
-                [ navLink "Home" HomeRoute ]
-            , li []
-                [ navLink "Exercises" ExercisesRoute
-                , ul []
-                    [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
-                ]
-            , li []
-                [ navLink "Routines" RoutinesRoute
-                , ul []
-                    [ li [] [ navLink "Add Routine" RoutineAddRoute ] ]
-                ]
+    ul []
+        [ li []
+            [ navLink "Home" HomeRoute ]
+        , li []
+            [ navLink "Exercises" ExercisesRoute
+            , ul []
+                [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
             ]
+        , li []
+            [ navLink "Routines" RoutinesRoute
+            , ul []
+                [ li [] [ navLink "Add Routine" RoutineAddRoute ] ]
+            ]
+        ]
 
 
 {-| Render the Page Content using the current Route.
