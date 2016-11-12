@@ -54,6 +54,16 @@ navLink content route =
         [ text content ]
 
 
+{-| Either render the given Html element or an empty node.
+-}
+htmlOrBlank : Bool -> Html msg -> Html msg
+htmlOrBlank showHtml html =
+    if showHtml then
+        html
+    else
+        text ""
+
+
 {-| Find the first item with the matching `id` value.
 -}
 findById : a -> List { b | id : a } -> Maybe { b | id : a }

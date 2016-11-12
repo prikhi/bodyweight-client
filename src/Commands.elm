@@ -39,7 +39,12 @@ fetchForRoute route =
             Cmd.none
 
         RoutineRoute id ->
-            fetchRoutine id
+            Cmd.batch
+                [ fetchExercises
+                , fetchRoutine id
+                , fetchSections
+                , fetchSectionExercises
+                ]
 
         RoutineEditRoute id ->
             Cmd.batch

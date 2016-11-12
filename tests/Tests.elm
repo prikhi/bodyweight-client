@@ -2,10 +2,11 @@ module Tests exposing (..)
 
 import Array
 import Expect
+import Html
 import Models.Exercises exposing (initialExercise, exerciseType)
 import String
 import Test exposing (Test, test, describe)
-import Utils exposing (findById, removeByIndex, updateByIndex, indexIsSaved, swapIndexes)
+import Utils exposing (findById, removeByIndex, updateByIndex, indexIsSaved, swapIndexes, htmlOrBlank)
 
 
 all : Test
@@ -40,11 +41,26 @@ exerciseTypeTests =
 utilsTests : Test
 utilsTests =
     describe "Utils"
-        [ findByIdTests
+        [ htmlOrBlankTests
+        , findByIdTests
         , indexIsSavedTests
         , removeByIndexTests
         , updateByIndexTests
         , swapIndexesTests
+        ]
+
+
+htmlOrBlankTests : Test
+htmlOrBlankTests =
+    describe "htmlOrBlank"
+        [ test "false returns empty text node" <|
+            \() ->
+                Expect.equal (Html.text "") <|
+                    htmlOrBlank False (Html.text "not blank")
+        , test "true returns passed node" <|
+            \() ->
+                Expect.equal (Html.text "not blank") <|
+                    htmlOrBlank True (Html.text "not blank")
         ]
 
 

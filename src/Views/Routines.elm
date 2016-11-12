@@ -11,7 +11,8 @@ import Models.Exercises exposing (Exercise, ExerciseId)
 import Models.Routines exposing (Routine)
 import Models.Sections exposing (Section, SectionExercise, SectionForm)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (onSelectInt, findById, textField, intField, navLink)
+import String
+import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank)
 
 
 {-| Render a listing of Routines.
@@ -26,14 +27,83 @@ routinesPage routines =
 
 {-| Render the details of a single `Routine`.
 -}
-routinePage : Routine -> Html Msg
-routinePage { id, name } =
-    div []
-        [ h1 [] [ text name ]
-        , button [ onClick <| NavigateTo <| RoutineEditRoute id ] [ text "Edit" ]
-        , text " "
-        , button [ onClick <| DeleteRoutineClicked id ] [ text "Delete" ]
-        ]
+routinePage : Model -> Routine -> Html Msg
+routinePage model { id, name, copyright } =
+    let
+        sections =
+            List.filter (\s -> s.routine == id) model.sections
+    in
+        div []
+            [ h1 [] [ text name ]
+            , button [ onClick <| NavigateTo <| RoutineEditRoute id ] [ text "Edit" ]
+            , text " "
+            , button [ onClick <| DeleteRoutineClicked id ] [ text "Delete" ]
+            , p [] [ small [] [ text "Copyright: ", text copyright ] ]
+            , div [] <|
+                List.map (sectionTable model) sections
+            ]
+
+
+{-| Render a Routine's Section as a Table.
+-}
+sectionTable : Model -> Section -> Html Msg
+sectionTable model { id, name } =
+    let
+        sectionExercises =
+            List.filter (\se -> se.section == id) model.sectionExercises
+    in
+        div []
+            [ h2 [] [ text name ]
+            , table []
+                [ thead []
+                    [ th [] [ text "Exercise" ]
+                    , th [] [ text "Volume" ]
+                    ]
+                , tbody [] <| List.map (sectionExerciseRow model) sectionExercises
+                ]
+            ]
+
+
+{-| Render a Section's SectionExercise as a Table Row.
+-}
+sectionExerciseRow : Model -> SectionExercise -> Html Msg
+sectionExerciseRow model sectionExercise =
+    let
+        selectedExercises =
+            getSelectedExercises model.exercises sectionExercise.exercises
+
+        ifSelected pred =
+            htmlOrBlank <| List.any pred selectedExercises
+
+        setRepTimeCounts =
+            [ ( List.any (not << .isHold) selectedExercises, toString sectionExercise.repCount )
+            , ( List.any .isHold selectedExercises, toString sectionExercise.holdTime ++ "s" )
+            ]
+                |> List.filter fst
+                |> List.map (\( _, count ) -> toString sectionExercise.setCount ++ "x" ++ count)
+                |> List.intersperse ", "
+                |> String.concat
+
+        exerciseLink exercise =
+            navLink exercise.name <| ExerciseRoute exercise.id
+
+        exerciseLinks =
+            List.map exerciseLink selectedExercises
+                |> List.intersperse (text " > ")
+                |> span []
+    in
+        tr []
+            [ td [] [ exerciseLinks ]
+            , td [] [ text setRepTimeCounts ]
+            ]
+
+
+{-| Get the selected Exercises from the list of all Exercises.
+-}
+getSelectedExercises : List Exercise -> Array ExerciseId -> List Exercise
+getSelectedExercises exercises ids =
+    Array.foldr (\id list -> findById id exercises :: list) [] ids
+        |> List.filterMap identity
 
 
 {-| Render a table of Routines.
@@ -159,15 +229,15 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
         formMsg =
             sectionMsg << SectionExerciseFormMsg exerciseIndex
 
-        exerciseCount =
+        progressionCount =
             Array.length form.exercises
 
-        formName =
-            Array.get (exerciseCount - 1) form.exercises
+        progressionName =
+            Array.get (progressionCount - 1) form.exercises
                 `Maybe.andThen` (flip findById exercises)
                 |> Maybe.map
                     (\{ name } ->
-                        if exerciseCount > 1 then
+                        if progressionCount > 1 then
                             name ++ " Progression"
                         else
                             name
@@ -189,13 +259,10 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                 ]
 
         selectedExercises =
-            List.filter (flip List.member (Array.toList form.exercises) << .id) exercises
+            getSelectedExercises exercises form.exercises
 
-        ifSelected pred content =
-            if List.any pred selectedExercises then
-                content
-            else
-                text ""
+        ifSelected pred =
+            htmlOrBlank <| List.any pred selectedExercises
 
         repInput =
             ifSelected (not << .isHold) <|
@@ -225,7 +292,11 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
     in
         fieldset []
             [ legend []
-                [ text <| "Exercise #" ++ toString (exerciseIndex + 1) ++ " " ++ formName
+                [ text <|
+                    "Exercise #"
+                        ++ toString (exerciseIndex + 1)
+                        ++ " "
+                        ++ progressionName
                 , text " "
                 , button [ onClick <| sectionMsg <| MoveExerciseUp exerciseIndex ]
                     [ text "↑" ]

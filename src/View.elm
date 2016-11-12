@@ -71,7 +71,7 @@ page ({ route, exercises, routines } as model) =
 
         RoutineRoute id ->
             findById id routines
-                |> Maybe.map routinePage
+                |> Maybe.map (routinePage model)
                 |> Maybe.withDefault notFoundPage
 
         RoutineEditRoute id ->
