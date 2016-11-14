@@ -71,7 +71,7 @@ update msg model =
                 ( model, Navigation.newUrl <| reverse <| ExerciseRoute model.exerciseForm.id )
 
         FetchExercises (Ok newExercises) ->
-            ( { model | exercises = newExercises }, Cmd.none )
+            ( { model | exercises = List.sortBy .name newExercises }, Cmd.none )
 
         FetchExercises (Err _) ->
             ( model, Cmd.none )
