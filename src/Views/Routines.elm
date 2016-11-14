@@ -38,7 +38,8 @@ routinePage model { id, name, copyright } =
             , button [ onClick <| NavigateTo <| RoutineEditRoute id ] [ text "Edit" ]
             , text " "
             , button [ onClick <| DeleteRoutineClicked id ] [ text "Delete" ]
-            , p [] [ small [] [ text "Copyright: ", text copyright ] ]
+            , htmlOrBlank (not <| String.isEmpty copyright) <|
+                p [] [ small [] [ text "Copyright: ", text copyright ] ]
             , div [] <|
                 List.map (sectionTable model) sections
             ]
