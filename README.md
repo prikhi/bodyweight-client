@@ -1,5 +1,7 @@
 # Bodyweight Client
 
+[![Build Status](https://travis-ci.org/prikhi/bodyweight-client.svg?branch=master)](https://travis-ci.org/prikhi/bodyweight-client)
+
 A Bodyweight Workout Log frontend written in Elm.
 
 Right now only Adding/Viewing/Listing/Editing/Deleting of Exercises & Routines
