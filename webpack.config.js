@@ -24,6 +24,23 @@ module.exports = {
         exclude: [/elm-stuff/, /node_modules/,],
         loader: 'elm-hot!elm-webpack?warn=true&verbose=true',
       },
+      {
+        test: /\.sass$/,
+        exclude: /node_modules/,
+        loaders: ['style', 'css', 'sass'],
+      },
+      {
+        test: /\.css$/,
+        exclude: /node_modules/,
+        loaders: ['style', 'css']
+      },
+      {
+        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "url-loader?limit=10000&minetype=application/font-woff"
+      },
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+        loader: "file-loader" 
+      },
     ],
 
     noParse: /\.elm$/,

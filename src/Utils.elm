@@ -1,8 +1,8 @@
 module Utils exposing (..)
 
 import Array exposing (Array)
-import Html exposing (Html, Attribute, label, input, text, a)
-import Html.Attributes exposing (name, value, type_, href)
+import Html exposing (Html, Attribute, label, input, text, a, node)
+import Html.Attributes exposing (name, value, type_, href, class)
 import Html.Events exposing (onWithOptions, defaultOptions, on, onInput, targetValue)
 import Json.Decode as Decode
 import Messages exposing (Msg(NavigateTo))
@@ -45,6 +45,11 @@ onSelectInt msg =
 onInputInt : (Int -> msg) -> Attribute msg
 onInputInt msg =
     on "input" (Decode.map msg targetValueIntDecoder)
+
+
+icon : String -> Html msg
+icon iconClass =
+    node "i" [ class <| "fa fa-" ++ iconClass ] []
 
 
 {-| Create a link to an internal Route using some text.
@@ -150,6 +155,7 @@ textField labelText inputName inputValue msg =
     formField (labelText ++ ": ") <|
         input
             [ name inputName
+            , type_ "text"
             , value inputValue
             , onInput msg
             ]

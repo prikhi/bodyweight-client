@@ -2,7 +2,7 @@ module Views.Routines exposing (..)
 
 import Array exposing (Array)
 import Html exposing (..)
-import Html.Attributes exposing (type_, value, name, selected, checked)
+import Html.Attributes exposing (type_, value, name, selected, checked, class)
 import Html.Events exposing (onClick, onSubmit, onInput, onCheck)
 import Html.Keyed as Keyed
 import Messages exposing (..)
@@ -12,7 +12,7 @@ import Models.Routines exposing (Routine)
 import Models.Sections exposing (Section, SectionExercise, SectionForm)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank)
+import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank, icon)
 
 
 {-| Render a listing of Routines.
@@ -35,9 +35,19 @@ routinePage model { id, name, copyright } =
     in
         div []
             [ h1 [] [ text name ]
-            , button [ onClick <| NavigateTo <| RoutineEditRoute id ] [ text "Edit" ]
-            , text " "
-            , button [ onClick <| DeleteRoutineClicked id ] [ text "Delete" ]
+            , p []
+                [ button
+                    [ onClick <| NavigateTo <| RoutineEditRoute id
+                    , class "btn btn-sm btn-secondary"
+                    ]
+                    [ text "Edit" ]
+                , text " "
+                , button
+                    [ onClick <| DeleteRoutineClicked id
+                    , class "btn btn-sm btn-danger"
+                    ]
+                    [ text "Delete" ]
+                ]
             , htmlOrBlank (not <| String.isEmpty copyright) <|
                 p [] [ small [] [ text "Copyright: ", text copyright ] ]
             , div [] <|
@@ -55,7 +65,7 @@ sectionTable model { id, name } =
     in
         div []
             [ h2 [] [ text name ]
-            , table []
+            , table [ class "table table-sm table-striped" ]
                 [ thead []
                     [ th [] [ text "Exercise" ]
                     , th [] [ text "Volume" ]
@@ -111,7 +121,7 @@ getSelectedExercises exercises ids =
 -}
 routineTable : List Routine -> Html Msg
 routineTable routines =
-    table []
+    table [ class "table table-sm table-striped" ]
         [ thead []
             [ tr [] [ th [] [ text "Name" ] ] ]
         , tbody [] <| List.map routineRow routines
@@ -134,9 +144,18 @@ addRoutineForm routineForm =
         , form [ onSubmit SubmitAddRoutineForm ]
             [ textField "Name" "name" routineForm.name (RoutineFormChange << RoutineNameChange)
             , p []
-                [ input [ type_ "submit", value "Save" ] []
+                [ input
+                    [ class "btn btn-primary"
+                    , type_ "submit"
+                    , value "Save"
+                    ]
+                    []
                 , text " "
-                , button [ onClick CancelAddRoutineForm ] [ text "Cancel" ]
+                , button
+                    [ class "btn btn-secondary"
+                    , onClick CancelAddRoutineForm
+                    ]
+                    [ text "Cancel" ]
                 ]
             ]
         ]
@@ -152,22 +171,37 @@ editRoutineForm { exercises, routineForm, sectionForms } =
         , br [] []
         , textField "Copyright" "copyright" routineForm.copyright (RoutineFormChange << RoutineCopyrightChange)
         , br [] []
-        , label []
-            [ text "Is Public: "
-            , input
-                [ type_ "checkbox"
-                , checked routineForm.isPublic
-                , onCheck (RoutineFormChange << RoutinePublicChange)
+        , div [ class "form-check" ]
+            [ label [ class "form-check-label" ]
+                [ input
+                    [ type_ "checkbox"
+                    , class "form-check-input"
+                    , checked routineForm.isPublic
+                    , onCheck (RoutineFormChange << RoutinePublicChange)
+                    ]
+                    []
+                , text " Is Public"
                 ]
-                []
             ]
         , div [] <| Array.toList <| Array.indexedMap (editSectionForm exercises) sectionForms
-        , p []
-            [ button [ onClick (RoutineFormChange AddSection) ] [ text "Add Section" ]
+        , p [ class "mt-1" ]
+            [ button
+                [ class "btn btn-sm btn-primary"
+                , onClick (RoutineFormChange AddSection)
+                ]
+                [ text "Add Section" ]
             , text " "
-            , button [ onClick SubmitEditRoutineForm ] [ text "Save Routine" ]
+            , button
+                [ class "btn btn-sm btn-success"
+                , onClick SubmitEditRoutineForm
+                ]
+                [ text "Save Routine" ]
             , text " "
-            , button [ onClick CancelEditRoutineForm ] [ text "Cancel" ]
+            , button
+                [ class "btn btn-sm btn-danger"
+                , onClick CancelEditRoutineForm
+                ]
+                [ text "Cancel" ]
             ]
         ]
 
@@ -183,35 +217,55 @@ editSectionForm exercises index ({ section } as form) =
         sectionExerciseForms =
             Array.indexedMap (sectionExerciseForm exercises index) form.exercises
                 |> Array.toList
-                |> div []
+                |> div [ class "row justify-content-center" ]
     in
-        fieldset []
+        fieldset [ class "mb-4" ]
             [ legend []
                 [ text "Section: "
                 , input
                     [ name "name"
+                    , type_ "text"
                     , value section.name
                     , onInput <| formMsg << SectionNameChange
                     ]
                     []
                 , text " "
-                , button [ onClick <| RoutineFormChange <| MoveSectionUp index ]
-                    [ text "↑" ]
-                , button [ onClick <| RoutineFormChange <| MoveSectionDown index ]
-                    [ text "↓" ]
+                , button
+                    [ class "btn btn-sm btn-secondary"
+                    , onClick <| RoutineFormChange <| MoveSectionUp index
+                    ]
+                    [ icon "arrow-up" ]
+                , button
+                    [ class "btn btn-sm btn-secondary"
+                    , onClick <| RoutineFormChange <| MoveSectionDown index
+                    ]
+                    [ icon "arrow-down" ]
                 ]
             , sectionExerciseForms
-            , div []
-                [ button [ onClick <| formMsg <| AddSectionExercise ]
+            , div [ class "mt-1" ]
+                [ button
+                    [ class "btn btn-sm btn-secondary"
+                    , onClick <| formMsg <| AddSectionExercise
+                    ]
                     [ text "Add Exercise" ]
                 , text " "
-                , button [ onClick <| SaveSectionClicked index ] [ text "Save Section" ]
+                , button
+                    [ class "btn btn-sm btn-success"
+                    , onClick <| SaveSectionClicked index
+                    ]
+                    [ text "Save Section" ]
                 , text " "
-                , button [ onClick <| RoutineFormChange <| CancelSection index ]
-                    [ text "Cancel" ]
+                , button
+                    [ class "btn btn-sm btn-secondary"
+                    , onClick <| RoutineFormChange <| CancelSection index
+                    ]
+                    [ text "Reset" ]
                 , text " "
                 , if section.id /= 0 then
-                    button [ onClick <| DeleteSectionClicked index section.id ]
+                    button
+                        [ class "btn btn-sm btn-danger"
+                        , onClick <| DeleteSectionClicked index section.id
+                        ]
                         [ text "Delete Section" ]
                   else
                     text ""
@@ -267,11 +321,11 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
 
         repInput =
             ifSelected (not << .isHold) <|
-                div []
+                span []
                     [ intField "Reps" "reps" (toString form.repCount) <|
                         formMsg
                             << ChangeRepCount
-                    , br [] []
+                    , text " "
                     , intField "Reps to Progress"
                         "progress-reps"
                         (toString form.repsToProgress)
@@ -280,56 +334,79 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
 
         holdInput =
             ifSelected .isHold <|
-                div []
+                span []
                     [ intField "Hold Time" "hold-time" (toString form.holdTime) <|
                         formMsg
                             << ChangeHoldTime
-                    , br [] []
+                    , text " "
                     , intField "Time to Progress"
                         "progress-time"
                         (toString form.timeToProgress)
                         (formMsg << ChangeHoldProgress)
                     ]
     in
-        fieldset []
-            [ legend []
-                [ text <|
-                    "Exercise #"
-                        ++ toString (exerciseIndex + 1)
-                        ++ " "
-                        ++ progressionName
-                , text " "
-                , button [ onClick <| sectionMsg <| MoveExerciseUp exerciseIndex ]
-                    [ text "↑" ]
-                , button
-                    [ onClick <| sectionMsg <| MoveExerciseDown exerciseIndex
-                    ]
-                    [ text "↓" ]
-                ]
-            , div [] exerciseInputs
-            , addExerciseInput
-            , intField "Sets" "sets" (toString form.setCount) <|
-                formMsg
-                    << ChangeSetCount
-            , repInput
-            , holdInput
-            , div []
-                [ button
-                    [ onClick <| SaveSectionExerciseClicked sectionIndex exerciseIndex ]
-                    [ text "Save Exercise" ]
-                , text " "
-                , button
-                    [ onClick <| sectionMsg <| CancelSectionExercise exerciseIndex ]
-                    [ text "Cancel" ]
-                , text " "
-                , if form.id /= 0 then
-                    button
-                        [ onClick <|
-                            DeleteSectionExerciseClicked sectionIndex exerciseIndex form.id
+        div [ class "col-12 col-md-6 col-xl-4" ]
+            [ div [ class "card mb-2" ]
+                [ h5 [ class "card-header clearfix" ]
+                    [ span []
+                        [ text <|
+                            "Exercise #"
+                                ++ toString (exerciseIndex + 1)
+                                ++ " "
+                                ++ progressionName
                         ]
-                        [ text "Delete Exercise" ]
-                  else
-                    text ""
+                    , div [ class "float-right" ]
+                        [ button
+                            [ class "btn btn-sm btn-secondary"
+                            , onClick <| sectionMsg <| MoveExerciseUp exerciseIndex
+                            ]
+                            [ icon "arrow-up" ]
+                        , button
+                            [ class "btn btn-sm btn-secondary"
+                            , onClick <| sectionMsg <| MoveExerciseDown exerciseIndex
+                            ]
+                            [ icon "arrow-down" ]
+                        , text " "
+                        ]
+                    , div [ class "mt-1" ]
+                        [ button
+                            [ class "btn btn-sm btn-success"
+                            , onClick <| SaveSectionExerciseClicked sectionIndex exerciseIndex
+                            ]
+                            [ icon "save" ]
+                        , button
+                            [ class "btn btn-sm btn-secondary"
+                            , onClick <| sectionMsg <| CancelSectionExercise exerciseIndex
+                            ]
+                            [ icon <|
+                                if form.id /= 0 then
+                                    "refresh"
+                                else
+                                    "remove"
+                            ]
+                        , if form.id /= 0 then
+                            button
+                                [ class "btn btn-sm btn-danger"
+                                , onClick <|
+                                    DeleteSectionExerciseClicked sectionIndex exerciseIndex form.id
+                                ]
+                                [ icon "remove" ]
+                          else
+                            text ""
+                        ]
+                    ]
+                , div [ class "card-block" ]
+                    [ div [] exerciseInputs
+                    , addExerciseInput
+                    , div [ class "short-inputs" ]
+                        [ intField "Sets" "sets" (toString form.setCount) <|
+                            formMsg
+                                << ChangeSetCount
+                        , text " "
+                        , repInput
+                        , holdInput
+                        ]
+                    ]
                 ]
             ]
 
@@ -340,6 +417,7 @@ addExerciseSelect : List Exercise -> Int -> Int -> Html Msg
 addExerciseSelect exercises sectionIndex exerciseIndex =
     select
         [ name "exercise"
+        , class "form-control add-exercise-select"
         , onSelectInt <|
             RoutineFormChange
                 << SectionFormMsg sectionIndex
@@ -364,12 +442,14 @@ editExerciseSelect exercises sectionIndex exerciseIndex index exerciseId =
         div []
             [ select
                 [ name <| "exercise-" ++ toString index
+                , class "form-control"
                 , onSelectInt <| formMsg << ChangeExercise index
                 ]
               <|
                 List.map (exerciseOption <| Just exerciseId) exercises
-            , button [ onClick <| formMsg <| RemoveExercise index ]
-                [ text "X" ]
+            , text " "
+            , span [ onClick <| formMsg <| RemoveExercise index ]
+                [ icon "times fa-lg" ]
             ]
 
 

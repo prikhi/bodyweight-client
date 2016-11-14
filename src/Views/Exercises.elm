@@ -1,7 +1,7 @@
 module Views.Exercises exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href, name, value, checked, type_, width, height, src, attribute)
+import Html.Attributes exposing (href, name, value, checked, type_, width, height, src, attribute, class)
 import Html.Events exposing (onInput, onClick, onCheck, onSubmit)
 import Messages exposing (Msg(..), ExerciseFormMessage(..))
 import Model exposing (Model)
@@ -66,9 +66,19 @@ exercisePage ({ id, name, description } as exercise) =
     in
         div []
             [ h1 [] [ text name ]
-            , button [ onClick <| NavigateTo <| ExerciseEditRoute id ] [ text "Edit" ]
-            , text " "
-            , button [ onClick <| DeleteExerciseClicked id ] [ text "Delete" ]
+            , p []
+                [ button
+                    [ class "btn btn-sm btn-secondary"
+                    , onClick <| NavigateTo <| ExerciseEditRoute id
+                    ]
+                    [ text "Edit" ]
+                , text " "
+                , button
+                    [ class "btn btn-sm btn-danger"
+                    , onClick <| DeleteExerciseClicked id
+                    ]
+                    [ text "Delete" ]
+                ]
             , youtubeIframe
             , p []
                 [ b [] [ text <| exerciseType exercise ]
@@ -105,6 +115,7 @@ exerciseForm { exerciseForm } =
                         ]
                         []
                     ]
+            , br [] []
             , formField "Is Hold? " <|
                 input
                     [ name "is-hold"
@@ -120,9 +131,10 @@ exerciseForm { exerciseForm } =
             , textField "Amazon ID" "amazon" exerciseForm.amazonIds <|
                 formMsg AmazonChange
             , p []
-                [ input [ type_ "submit", value "Save" ] []
+                [ input [ type_ "submit", value "Save", class "btn btn-primary" ] []
                 , text " "
-                , button [ onClick CancelExerciseForm ] [ text "Cancel" ]
+                , button [ onClick CancelExerciseForm, class "btn btn-secondary" ]
+                    [ text "Cancel" ]
                 ]
             ]
 
@@ -131,7 +143,7 @@ exerciseForm { exerciseForm } =
 -}
 exerciseTable : List Exercise -> Html Msg
 exerciseTable exercises =
-    table []
+    table [ class "table table-sm table-striped" ]
         [ thead []
             [ tr []
                 [ th [] [ text "Name" ]

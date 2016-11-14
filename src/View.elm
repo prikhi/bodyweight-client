@@ -1,10 +1,12 @@
 module View exposing (view)
 
-import Html exposing (Html, div, ul, li, text, h1, p, a)
+import Html exposing (Html, div, text, h1, p)
+import Html.Attributes exposing (class)
 import Messages exposing (Msg(..))
 import Model exposing (Model)
+import Navbar exposing (nav)
 import Routing exposing (Route(..), reverse)
-import Utils exposing (findById, navLink)
+import Utils exposing (findById, navLink, onClickNoDefault)
 import Views.Exercises exposing (exercisesPage, exercisePage, exerciseForm)
 import Views.Routines exposing (routinesPage, routinePage, addRoutineForm, editRoutineForm)
 
@@ -13,27 +15,7 @@ import Views.Routines exposing (routinesPage, routinePage, addRoutineForm, editR
 -}
 view : Model -> Html Msg
 view model =
-    div [] [ nav, page model ]
-
-
-{-| Render the Nav Menu.
--}
-nav : Html Msg
-nav =
-    ul []
-        [ li []
-            [ navLink "Home" HomeRoute ]
-        , li []
-            [ navLink "Exercises" ExercisesRoute
-            , ul []
-                [ li [] [ navLink "Add Exercise" ExerciseAddRoute ] ]
-            ]
-        , li []
-            [ navLink "Routines" RoutinesRoute
-            , ul []
-                [ li [] [ navLink "Add Routine" RoutineAddRoute ] ]
-            ]
-        ]
+    div [] [ nav, div [ class "container" ] [ page model ] ]
 
 
 {-| Render the Page Content using the current Route.
@@ -86,7 +68,7 @@ homePage : Html msg
 homePage =
     div []
         [ h1 [] [ text "Home" ]
-        , p [] [ text "Welcome to BodyWeightLogger.", text "test em dubs" ]
+        , p [] [ text "Welcome to BodyWeightLogger." ]
         ]
 
 

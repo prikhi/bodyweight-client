@@ -1,0 +1,37 @@
+@import "~bootstrap/scss/variables"
+@import "variables"
+@import "~bootstrap/scss/bootstrap"
+
+input[type=text], input[type=number], textarea
+  @extend .form-control
+
+textarea
+  resize: both
+
+div fieldset
+  border: $gray-lighter solid 1px
+  padding: 0.5em
+  & > legend
+    padding-left: 0.25em
+    padding-right: 0.25em
+    width: auto
+    input[type=text]
+      width: auto
+      display: inline
+  fieldset legend
+      font-size: 1.25rem
+
+
+.btn-success
+  color: $gray-dark
+
+
+.add-exercise-select
+  margin-bottom: 0.5rem
+
+
+.short-inputs
+  label
+    margin-right: 0.25rem
+  input
+    width: 3.5rem
