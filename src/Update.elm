@@ -1,4 +1,4 @@
-module Update exposing (urlUpdate, update)
+module Update exposing (update)
 
 import Array exposing (Array)
 import Commands as C
@@ -16,12 +16,9 @@ import Utils exposing (findById, replaceById, updateByIndex, removeByIndex)
 
 {-| Update the Model's `route` when the URL changes.
 -}
-urlUpdate : Result String Route -> Model -> ( Model, Cmd Msg )
-urlUpdate result model =
+urlUpdate : Route -> Model -> ( Model, Cmd Msg )
+urlUpdate route model =
     let
-        route =
-            routeFromResult result
-
         {- Initialize Forms on Add/Edit Pages -}
         updatedModel =
             case route of
@@ -46,6 +43,9 @@ urlUpdate result model =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        UrlUpdate route ->
+            urlUpdate route model
+
         NavigateTo route ->
             ( model, Navigation.newUrl <| reverse route )
 
@@ -133,7 +133,7 @@ update msg model =
         SaveSectionExerciseClicked sectionIndex exerciseIndex ->
             ( model
             , Array.get sectionIndex model.sectionForms
-                `Maybe.andThen`
+                |> Maybe.andThen
                     (.exercises
                         >> Array.get exerciseIndex
                         >> Maybe.map

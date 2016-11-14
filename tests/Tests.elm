@@ -60,7 +60,7 @@ htmlOrBlankTests =
         , test "true returns passed node" <|
             \() ->
                 Expect.equal (Html.text "not blank") <|
-                    htmlOrBlank True (Html.text "not blank")
+                    htmlOrBlank True (Html.text "not blan")
         ]
 
 

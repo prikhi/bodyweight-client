@@ -2,7 +2,7 @@ module Commands exposing (..)
 
 import Array exposing (Array)
 import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, withHeader, withJsonBody)
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Messages exposing (Msg(..), HttpMsg)
 import Models.Exercises exposing (Exercise, ExerciseId, exerciseDecoder, exerciseEncoder)
@@ -62,7 +62,7 @@ fetchForRoute route =
 -}
 performApiRequest : (Result a b -> msg) -> Task.Task a (HttpBuilder.Response b) -> Cmd msg
 performApiRequest msg =
-    Task.perform (msg << Err) (msg << Ok << .data)
+    Task.attempt (Result.map .data >> msg)
 
 
 {-| Fetch data from the backend server.
@@ -140,19 +140,19 @@ createOrUpdateArray selector createFunc updateFunc =
 
 fetchExercises : Cmd Msg
 fetchExercises =
-    fetch "exercises" ("exercise" := Decode.list exerciseDecoder) FetchExercises
+    fetch "exercises" (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises
 
 
 fetchExercise : ExerciseId -> Cmd Msg
 fetchExercise id =
-    fetch ("exercises/" ++ toString id) ("exercise" := exerciseDecoder) FetchExercise
+    fetch ("exercises/" ++ toString id) (Decode.field "exercise" exerciseDecoder) FetchExercise
 
 
 createExercise : Exercise -> Cmd Msg
 createExercise exercise =
     create "exercises"
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
-        ("exercise" := exerciseDecoder)
+        (Decode.field "exercise" exerciseDecoder)
         CreateExercise
 
 
@@ -161,7 +161,7 @@ updateExercise exercise =
     update "exercises"
         exercise.id
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
-        ("exercise" := exerciseDecoder)
+        (Decode.field "exercise" exerciseDecoder)
         CreateExercise
 
 
@@ -176,19 +176,19 @@ deleteExercise exerciseId =
 
 fetchRoutines : Cmd Msg
 fetchRoutines =
-    fetch "routines" ("routine" := Decode.list routineDecoder) FetchRoutines
+    fetch "routines" (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines
 
 
 fetchRoutine : RoutineId -> Cmd Msg
 fetchRoutine routineId =
-    fetch ("routines/" ++ toString routineId) ("routine" := routineDecoder) FetchRoutine
+    fetch ("routines/" ++ toString routineId) (Decode.field "routine" routineDecoder) FetchRoutine
 
 
 createRoutine : Routine -> Cmd Msg
 createRoutine routine =
     create "routines"
         (Encode.object [ ( "routine", routineEncoder routine ) ])
-        ("routine" := routineDecoder)
+        (Decode.field "routine" routineDecoder)
         CreateRoutine
 
 
@@ -197,7 +197,7 @@ updateRoutine routine =
     update "routines"
         routine.id
         (Encode.object [ ( "routine", routineEncoder routine ) ])
-        ("routine" := routineDecoder)
+        (Decode.field "routine" routineDecoder)
         UpdateRoutine
 
 
@@ -212,14 +212,14 @@ deleteRoutine routineId =
 
 fetchSections : Cmd Msg
 fetchSections =
-    fetch "sections" ("section" := Decode.list sectionDecoder) FetchSections
+    fetch "sections" (Decode.field "section" (Decode.list sectionDecoder)) FetchSections
 
 
 createSection : Int -> Section -> Cmd Msg
 createSection index section =
     create "sections"
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
-        ("section" := sectionDecoder)
+        (Decode.field "section" sectionDecoder)
         (CreateSection index)
 
 
@@ -228,7 +228,7 @@ updateSection index section =
     update "sections"
         section.id
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
-        ("section" := sectionDecoder)
+        (Decode.field "section" sectionDecoder)
         (UpdateSection index)
 
 
@@ -244,7 +244,7 @@ deleteSection index id =
 fetchSectionExercises : Cmd Msg
 fetchSectionExercises =
     fetch "sectionExercises"
-        ("sectionExercise" := Decode.list sectionExerciseDecoder)
+        (Decode.field "sectionExercise" (Decode.list sectionExerciseDecoder))
         FetchSectionExercises
 
 
@@ -257,7 +257,7 @@ createSectionExercise sectionIndex exerciseIndex sectionExercise =
               )
             ]
         )
-        ("sectionExercise" := sectionExerciseDecoder)
+        (Decode.field "sectionExercise" sectionExerciseDecoder)
         (CreateSectionExercise sectionIndex exerciseIndex)
 
 
@@ -271,7 +271,7 @@ updateSectionExercise sectionIndex exerciseIndex sectionExercise =
               )
             ]
         )
-        ("sectionExercise" := sectionExerciseDecoder)
+        (Decode.field "sectionExercise" sectionExerciseDecoder)
         (UpdateSectionExercise sectionIndex exerciseIndex)
 
 

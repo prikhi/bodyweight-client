@@ -2,9 +2,9 @@ module Utils exposing (..)
 
 import Array exposing (Array)
 import Html exposing (Html, Attribute, label, input, text, a)
-import Html.Attributes exposing (name, value, type', href)
+import Html.Attributes exposing (name, value, type_, href)
 import Html.Events exposing (onWithOptions, defaultOptions, on, onInput, targetValue)
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode
 import Messages exposing (Msg(NavigateTo))
 import Routing exposing (Route, reverse)
 import String
@@ -15,14 +15,15 @@ import String
 targetValueIntDecoder : Decode.Decoder Int
 targetValueIntDecoder =
     targetValue
-        `Decode.andThen`
-            \val ->
+        |> Decode.andThen
+            (\val ->
                 case String.toInt val of
                     Ok i ->
                         Decode.succeed i
 
                     Err err ->
                         Decode.fail err
+            )
 
 
 {-| An `onClick` Html Event that prevents the default action.
@@ -126,7 +127,7 @@ updateByIndex index update array =
 swapIndexes : Int -> Int -> Array a -> Array a
 swapIndexes fromIndex toIndex array =
     Array.get toIndex array
-        `Maybe.andThen`
+        |> Maybe.andThen
             (\temp ->
                 Array.get fromIndex array
                     |> Maybe.map (\item -> Array.set toIndex item array)
@@ -162,7 +163,7 @@ intField labelText inputName inputValue msg =
     formField (labelText ++ ": ") <|
         input
             [ name inputName
-            , type' "number"
+            , type_ "number"
             , value inputValue
             , onInputInt msg
             ]

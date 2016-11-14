@@ -3,7 +3,6 @@ module Routing exposing (..)
 import Models.Exercises exposing (ExerciseId)
 import Models.Routines exposing (RoutineId)
 import Navigation
-import String
 import UrlParser exposing (..)
 
 
@@ -27,30 +26,23 @@ type Route
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ format HomeRoute (s "")
-        , format ExercisesRoute (s "exercises" </> s "")
-        , format ExerciseAddRoute (s "exercises" </> s "add")
-        , format ExerciseEditRoute (s "exercises" </> int </> s "edit")
-        , format ExerciseRoute (s "exercises" </> int)
-        , format RoutinesRoute (s "routines" </> s "")
-        , format RoutineAddRoute (s "routines" </> s "add")
-        , format RoutineEditRoute (s "routines" </> int </> s "edit")
-        , format RoutineRoute (s "routines" </> int)
+        [ map HomeRoute (s "")
+        , map ExercisesRoute (s "exercises" </> s "")
+        , map ExerciseAddRoute (s "exercises" </> s "add")
+        , map ExerciseEditRoute (s "exercises" </> int </> s "edit")
+        , map ExerciseRoute (s "exercises" </> int)
+        , map RoutinesRoute (s "routines" </> s "")
+        , map RoutineAddRoute (s "routines" </> s "add")
+        , map RoutineEditRoute (s "routines" </> int </> s "edit")
+        , map RoutineRoute (s "routines" </> int)
         ]
 
 
 {-| Attempt to parse a Locaton's Hash into a Route.
 -}
-hashParser : Navigation.Location -> Result String Route
-hashParser location =
-    location.hash |> String.dropLeft 1 |> parse identity matchers
-
-
-{-| The Hash Parser used by the application.
--}
-parser : Navigation.Parser (Result String Route)
-parser =
-    Navigation.makeParser hashParser
+routeParser : Navigation.Location -> Route
+routeParser location =
+    location |> parseHash matchers |> Maybe.withDefault NotFoundRoute
 
 
 {-| Pull a Route out of the parsed URL, defaulting to the `NotFoundRoute`.

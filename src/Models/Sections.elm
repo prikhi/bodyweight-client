@@ -1,7 +1,7 @@
 module Models.Sections exposing (..)
 
 import Array exposing (Array)
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode
 import Json.Encode as Encode
 import Models.Exercises exposing (ExerciseId)
 import Models.Routines exposing (RoutineId)
@@ -26,11 +26,11 @@ initialSection routineId =
 
 sectionDecoder : Decode.Decoder Section
 sectionDecoder =
-    Decode.object4 Section
-        ("id" := Decode.int)
-        ("name" := Decode.string)
-        ("routine" := Decode.int)
-        ("order" := Decode.int)
+    Decode.map4 Section
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "routine" Decode.int)
+        (Decode.field "order" Decode.int)
 
 
 sectionEncoder : Section -> Encode.Value
@@ -77,20 +77,21 @@ initialSectionExercise sectionId =
 
 sectionExerciseDecoder : Decode.Decoder SectionExercise
 sectionExerciseDecoder =
-    Decode.object8 SectionExercise
-        ("id" := Decode.int)
-        ("order" := Decode.int)
-        ("section" := Decode.int)
-        ("exercises" := Decode.array Decode.int)
-        ("setCount" := Decode.int)
-        ("repCount" := Decode.int)
-        ("holdTime" := Decode.int)
-        ("repsToProgress" := Decode.int)
-        `Decode.andThen`
-            \f ->
-                Decode.object2 f
-                    ("timeToProgress" := Decode.int)
-                    ("restAfter" := Decode.bool)
+    Decode.map8 SectionExercise
+        (Decode.field "id" Decode.int)
+        (Decode.field "order" Decode.int)
+        (Decode.field "section" Decode.int)
+        (Decode.field "exercises" (Decode.array Decode.int))
+        (Decode.field "setCount" Decode.int)
+        (Decode.field "repCount" Decode.int)
+        (Decode.field "holdTime" Decode.int)
+        (Decode.field "repsToProgress" Decode.int)
+        |> Decode.andThen
+            (\f ->
+                Decode.map2 f
+                    (Decode.field "timeToProgress" Decode.int)
+                    (Decode.field "restAfter" Decode.bool)
+            )
 
 
 sectionExerciseEncoder : SectionExercise -> Encode.Value

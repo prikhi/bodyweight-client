@@ -1,6 +1,6 @@
 module Models.Exercises exposing (..)
 
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -35,13 +35,13 @@ initialExercise =
 -}
 exerciseDecoder : Decode.Decoder Exercise
 exerciseDecoder =
-    Decode.object6 Exercise
-        ("id" := Decode.int)
-        ("name" := Decode.string)
-        ("description" := Decode.string)
-        ("isHold" := Decode.bool)
-        ("amazonIds" := Decode.string)
-        ("youtubeIds" := Decode.string)
+    Decode.map6 Exercise
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "description" Decode.string)
+        (Decode.field "isHold" Decode.bool)
+        (Decode.field "amazonIds" Decode.string)
+        (Decode.field "youtubeIds" Decode.string)
 
 
 {-| Encode a single `Exercise` for the backend.

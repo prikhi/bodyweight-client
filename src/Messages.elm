@@ -63,7 +63,8 @@ type SectionExerciseFormMessage
 {-| All Messages used in the application.
 -}
 type Msg
-    = NavigateTo Route
+    = UrlUpdate Route
+    | NavigateTo Route
     | DeleteExerciseClicked ExerciseId
     | ExerciseFormChange ExerciseFormMessage
     | SubmitExerciseForm

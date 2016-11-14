@@ -1,7 +1,7 @@
 module Views.Exercises exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (href, name, value, checked, type', width, height, src, attribute)
+import Html.Attributes exposing (href, name, value, checked, type_, width, height, src, attribute)
 import Html.Events exposing (onInput, onClick, onCheck, onSubmit)
 import Messages exposing (Msg(..), ExerciseFormMessage(..))
 import Model exposing (Model)
@@ -38,7 +38,7 @@ exercisePage ({ id, name, description } as exercise) =
             else
                 p []
                     [ iframe
-                        [ type' "text/html"
+                        [ type_ "text/html"
                         , width 516
                         , height 315
                         , src <| "https://www.youtube.com/embed/" ++ exercise.youtubeIds
@@ -108,7 +108,7 @@ exerciseForm { exerciseForm } =
             , formField "Is Hold? " <|
                 input
                     [ name "is-hold"
-                    , type' "checkbox"
+                    , type_ "checkbox"
                     , checked exerciseForm.isHold
                     , onCheck <| formMsg IsHoldChange
                     ]
@@ -120,7 +120,7 @@ exerciseForm { exerciseForm } =
             , textField "Amazon ID" "amazon" exerciseForm.amazonIds <|
                 formMsg AmazonChange
             , p []
-                [ input [ type' "submit", value "Save" ] []
+                [ input [ type_ "submit", value "Save" ] []
                 , text " "
                 , button [ onClick CancelExerciseForm ] [ text "Cancel" ]
                 ]

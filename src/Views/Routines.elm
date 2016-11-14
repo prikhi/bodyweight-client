@@ -2,7 +2,7 @@ module Views.Routines exposing (..)
 
 import Array exposing (Array)
 import Html exposing (..)
-import Html.Attributes exposing (type', value, name, selected, checked)
+import Html.Attributes exposing (type_, value, name, selected, checked)
 import Html.Events exposing (onClick, onSubmit, onInput, onCheck)
 import Html.Keyed as Keyed
 import Messages exposing (..)
@@ -80,7 +80,7 @@ sectionExerciseRow model sectionExercise =
             [ ( List.any (not << .isHold) selectedExercises, toString sectionExercise.repCount )
             , ( List.any .isHold selectedExercises, toString sectionExercise.holdTime ++ "s" )
             ]
-                |> List.filter fst
+                |> List.filter Tuple.first
                 |> List.map (\( _, count ) -> toString sectionExercise.setCount ++ "x" ++ count)
                 |> List.intersperse ", "
                 |> String.concat
@@ -134,7 +134,7 @@ addRoutineForm routineForm =
         , form [ onSubmit SubmitAddRoutineForm ]
             [ textField "Name" "name" routineForm.name (RoutineFormChange << RoutineNameChange)
             , p []
-                [ input [ type' "submit", value "Save" ] []
+                [ input [ type_ "submit", value "Save" ] []
                 , text " "
                 , button [ onClick CancelAddRoutineForm ] [ text "Cancel" ]
                 ]
@@ -155,7 +155,7 @@ editRoutineForm { exercises, routineForm, sectionForms } =
         , label []
             [ text "Is Public: "
             , input
-                [ type' "checkbox"
+                [ type_ "checkbox"
                 , checked routineForm.isPublic
                 , onCheck (RoutineFormChange << RoutinePublicChange)
                 ]
@@ -235,7 +235,7 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
 
         progressionName =
             Array.get (progressionCount - 1) form.exercises
-                `Maybe.andThen` (flip findById exercises)
+                |> Maybe.andThen (flip findById exercises)
                 |> Maybe.map
                     (\{ name } ->
                         if progressionCount > 1 then

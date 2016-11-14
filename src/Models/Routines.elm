@@ -1,6 +1,6 @@
 module Models.Routines exposing (..)
 
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode
 import Json.Encode as Encode
 
 
@@ -31,11 +31,11 @@ initialRoutine =
 -}
 routineDecoder : Decode.Decoder Routine
 routineDecoder =
-    Decode.object4 Routine
-        ("id" := Decode.int)
-        ("name" := Decode.string)
-        ("copyright" := Decode.string)
-        ("isPublic" := Decode.bool)
+    Decode.map4 Routine
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "copyright" Decode.string)
+        (Decode.field "isPublic" Decode.bool)
 
 
 {-| Encode a single `Routine` for the backend.
