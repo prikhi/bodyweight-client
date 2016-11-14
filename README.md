@@ -2,12 +2,12 @@
 
 A Bodyweight Workout Log frontend written in Elm.
 
-Right now only Adding/Viewing/Listing/Editing/Deleting of Exercises is
-supported. Eventually we will support:
+Right now only Adding/Viewing/Listing/Editing/Deleting of Exercises & Routines
+is supported. Eventually we will support:
 
-* Routines
+* Logging Workouts
 * Users
-* Subscribing to & Logging Routines
+* Subscribing to Routines
 * Exporting Routines & Log Entries (Markdown, CSV)
 * Reports & Graphs
 
