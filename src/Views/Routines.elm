@@ -325,6 +325,14 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
         ifSelected pred =
             htmlOrBlank <| List.any pred selectedExercises
 
+        setInput =
+            if List.length selectedExercises /= 0 then
+                intField "Sets" "sets" (toString form.setCount) <|
+                    formMsg
+                        << ChangeSetCount
+            else
+                text ""
+
         repInput =
             ifSelected (not << .isHold) <|
                 span []
@@ -405,9 +413,7 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                     [ div [] exerciseInputs
                     , addExerciseInput
                     , div [ class "short-inputs" ]
-                        [ intField "Sets" "sets" (toString form.setCount) <|
-                            formMsg
-                                << ChangeSetCount
+                        [ setInput
                         , text " "
                         , repInput
                         , holdInput
