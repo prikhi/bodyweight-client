@@ -55,13 +55,16 @@ client & server repositories since they are tightly integrated.
     * Log a completed workout
     * Log a workout as you complete it
 * Users
-    * Profiels & profile pages
+    * Profiles & profile pages
         * Name
         * Subscribed routines
+        * Created routines
         * Logged workouts
+        * Reddit/twitter/facebook username
     * Routines owned by Users(add author to Routines table)
-    * Only routine owners
+    * Only routine owners can edit/delete their routines
     * Admin Users allowed to add/edit/delete exercises
+    * Page for admin users to see exercises w/o YouTube or Amazon links
     * Only a user can see their private routines
     * User can subscribe to a routine(Add subscriber count to Routines table)
 * Homepage
@@ -74,7 +77,7 @@ client & server repositories since they are tightly integrated.
     * Share w/ specific users
     * Multiple routine editors
 
-* Server Validation
+* Data Validation
     * Routines
         * To Progress must be greater than Reps/Hold Time
         * Exercises in a single progression cannot be repeated
@@ -83,6 +86,9 @@ client & server repositories since they are tightly integrated.
         * SectionExercises must have at least one Exercise
         * Section names cannot be blank
         * Routine names cannot be blank
+    * Exercises
+        * Has name
+        * Valid Youtube/Amazon IDs
 
 # License
 
