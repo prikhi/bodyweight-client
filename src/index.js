@@ -2,7 +2,7 @@
 
 require('./index.html');
 
-require('style!css!font-awesome/css/font-awesome.css');
+require('style-loader!css-loader!font-awesome/css/font-awesome.css');
 require('./styles.sass');
 
 global.jQuery = require('jquery/dist/jquery.slim.js');

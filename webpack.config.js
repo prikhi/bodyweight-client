@@ -13,30 +13,57 @@ module.exports = {
   },
 
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.html$/,
         exclude: /node_modules/,
-        loader: 'file?name=[name].[ext]',
+        use: [
+          {
+            loader: "file-loader",
+            options: {
+              name: "[name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.elm$/,
         exclude: [/elm-stuff/, /node_modules/,],
-        loader: 'elm-hot!elm-webpack?warn=true&verbose=true&debug=true',
+        use: [
+          {
+            loader: "elm-hot-loader"
+          },
+          {
+            loader: "elm-webpack-loader",
+            options: {
+              warn: true,
+              verbose: true,
+              debug: true,
+            },
+          },
+        ],
       },
       {
         test: /\.sass$/,
         exclude: /node_modules/,
-        loaders: ['style', 'css', 'sass'],
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       {
         test: /\.css$/,
         exclude: /node_modules/,
-        loaders: ['style', 'css']
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=10000&minetype=application/font-woff"
+        use: [
+          {
+            loader: "url-loader",
+            options: {
+              limit: 10000,
+              mimetype: "application/font-woff",
+            },
+          },
+        ],
       },
       { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "file-loader" 
