@@ -9,21 +9,6 @@ import Test exposing (Test, test, describe)
 import Utils exposing (findById, removeByIndex, updateByIndex, indexIsSaved, swapIndexes, htmlOrBlank)
 
 
-all : Test
-all =
-    describe "Application"
-        [ exerciseModelTests
-        , utilsTests
-        ]
-
-
-exerciseModelTests : Test
-exerciseModelTests =
-    describe "Models.Exercises"
-        [ exerciseTypeTests
-        ]
-
-
 exerciseTypeTests : Test
 exerciseTypeTests =
     describe "exerciseType"
@@ -35,18 +20,6 @@ exerciseTypeTests =
             \() ->
                 Expect.equal "Reps" <|
                     exerciseType { initialExercise | isHold = False }
-        ]
-
-
-utilsTests : Test
-utilsTests =
-    describe "Utils"
-        [ htmlOrBlankTests
-        , findByIdTests
-        , indexIsSavedTests
-        , removeByIndexTests
-        , updateByIndexTests
-        , swapIndexesTests
         ]
 
 
