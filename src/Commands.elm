@@ -79,7 +79,6 @@ fetch url decoder msg =
 create : String -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
 create url jsonValue decoder msg =
     post ("/api/" ++ url)
-        |> withHeader "Content-Type" "application/json"
         |> withJsonBody jsonValue
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
@@ -90,7 +89,6 @@ create url jsonValue decoder msg =
 update : String -> Int -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
 update url id jsonValue decoder msg =
     put ("/api/" ++ url ++ "/" ++ toString id)
-        |> withHeader "Content-Type" "application/json"
         |> withJsonBody jsonValue
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
