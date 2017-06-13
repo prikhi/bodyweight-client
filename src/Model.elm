@@ -4,8 +4,8 @@ import Array exposing (Array)
 import Models.Exercises exposing (Exercise, initialExercise)
 import Models.Routines exposing (Routine, initialRoutine)
 import Models.Sections exposing (Section, SectionForm, SectionExercise, initialSectionForm)
+import RemoteStatus
 import Routing exposing (Route)
-import SavingStatus
 
 
 {-| The global Model contains the list of exercises & a route.
@@ -18,7 +18,7 @@ type alias Model =
     , exerciseForm : Exercise
     , routineForm : Routine
     , sectionForms : Array SectionForm
-    , savingStatus : SavingStatus.Model
+    , savingStatus : RemoteStatus.Status
     , route : Route
     }
 
@@ -34,6 +34,6 @@ initialModel route =
     , sections = []
     , sectionForms = Array.fromList [ initialSectionForm 0 ]
     , sectionExercises = []
-    , savingStatus = SavingStatus.NotSaving
+    , savingStatus = RemoteStatus.initial
     , route = route
     }

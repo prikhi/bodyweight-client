@@ -33,7 +33,6 @@ This is a mix of client & server stuffs... We should probably consolidate the
 client & server repositories since they are tightly integrated.
 
 * Add Screenshot to README
-* Use `prikhi/remote-status` instead of `SavingStatus` module.
 * Refactor backend URLs into `Endpoint` type
 * Refactor view/model folders into folders by datatype(`routines/model`)
 * Add Exercise Form

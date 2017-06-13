@@ -8,9 +8,9 @@ import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
 import Models.Routines exposing (RoutineId, initialRoutine)
 import Models.Sections exposing (initialSectionForm)
 import Navigation
+import RemoteStatus
 import RoutineForm exposing (updateRoutineForm)
 import Routing exposing (Route(..), routeFromResult, reverse)
-import SavingStatus
 import Utils exposing (findById, replaceById, updateByIndex, removeByIndex)
 
 
@@ -185,7 +185,7 @@ update msg model =
             ( { model
                 | routines = replaceById newRoutine model.routines
                 , routineForm = newRoutine
-                , savingStatus = SavingStatus.start model.savingStatus
+                , savingStatus = RemoteStatus.start model.savingStatus
               }
             , C.createOrUpdateArray .section C.createSection C.updateSection model.sectionForms
             )
@@ -420,7 +420,7 @@ enqueueSavingSectionExercises index model =
     in
         ( { model
             | savingStatus =
-                SavingStatus.enqueue model.savingStatus <|
+                RemoteStatus.enqueue model.savingStatus <|
                     (Array.get index model.sectionForms
                         |> Maybe.map (\{ exercises } -> exercises)
                         |> Maybe.withDefault Array.empty
@@ -439,12 +439,12 @@ finishSavingSectionExercise : Model -> ( Model, Cmd Msg )
 finishSavingSectionExercise model =
     let
         updatedSavingStatus =
-            SavingStatus.finishOne model.savingStatus
+            RemoteStatus.finishOne model.savingStatus
 
         redirectCmd =
             Navigation.newUrl (reverse <| RoutineRoute model.routineForm.id)
     in
-        if SavingStatus.isFinished updatedSavingStatus then
-            ( { model | savingStatus = SavingStatus.initial }, redirectCmd )
+        if RemoteStatus.isFinished updatedSavingStatus then
+            ( { model | savingStatus = RemoteStatus.initial }, redirectCmd )
         else
             ( { model | savingStatus = updatedSavingStatus }, Cmd.none )
