@@ -218,6 +218,12 @@ editSectionForm exercises index ({ section } as form) =
             Array.indexedMap (sectionExerciseForm exercises index) form.exercises
                 |> Array.toList
                 |> div [ class "row justify-content-center" ]
+
+        ( resetButtonText, resetButtonClass ) =
+            if section.id == 0 then
+                ( "Remove", "btn-danger" )
+            else
+                ( "Reset", "btn-secondary" )
     in
         fieldset [ class "mb-4" ]
             [ legend []
@@ -256,10 +262,10 @@ editSectionForm exercises index ({ section } as form) =
                     [ text "Save Section" ]
                 , text " "
                 , button
-                    [ class "btn btn-sm btn-secondary"
+                    [ class <| "btn btn-sm " ++ resetButtonClass
                     , onClick <| RoutineFormChange <| CancelSection index
                     ]
-                    [ text "Reset" ]
+                    [ text resetButtonText ]
                 , text " "
                 , if section.id /= 0 then
                     button
