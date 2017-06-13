@@ -26,7 +26,7 @@ type Route
 matchers : Parser (Route -> a) a
 matchers =
     oneOf
-        [ map HomeRoute (s "")
+        [ map HomeRoute top
         , map ExercisesRoute (s "exercises" </> s "")
         , map ExerciseAddRoute (s "exercises" </> s "add")
         , map ExerciseEditRoute (s "exercises" </> int </> s "edit")
