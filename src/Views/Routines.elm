@@ -451,7 +451,7 @@ editExerciseSelect exercises sectionIndex exerciseIndex index exerciseId =
                 << SectionFormMsg sectionIndex
                 << SectionExerciseFormMsg exerciseIndex
     in
-        div []
+        div [ class "input-group" ]
             [ select
                 [ name <| "exercise-" ++ toString index
                 , class "form-control"
@@ -460,8 +460,8 @@ editExerciseSelect exercises sectionIndex exerciseIndex index exerciseId =
               <|
                 List.map (exerciseOption <| Just exerciseId) exercises
             , text " "
-            , span [ onClick <| formMsg <| RemoveExercise index ]
-                [ icon "times fa-lg" ]
+            , span [ onClick <| formMsg <| RemoveExercise index, class "input-group-addon" ]
+                [ icon "times fa-lg text-danger" ]
             ]
 
 
