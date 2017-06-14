@@ -141,6 +141,20 @@ swapIndexes fromIndex toIndex array =
         |> Maybe.withDefault array
 
 
+{-| Determine if any item in an `Array` fulfills the given predicate.
+-}
+anyInArray : (a -> Bool) -> Array a -> Bool
+anyInArray pred =
+    Array.foldl
+        (\item bool ->
+            if bool then
+                bool
+            else
+                pred item
+        )
+        False
+
+
 {-| Render an input field with some label text.
 -}
 formField : String -> Html msg -> Html msg

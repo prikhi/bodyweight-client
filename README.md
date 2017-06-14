@@ -43,7 +43,6 @@ client & server repositories since they are tightly integrated.
     * Error messages!
 * Add Routine Form
     * Autocomplete Exercise Selects
-    * Remove Already Selected Exercises from Exercises Selects
     * Disable up/down buttons when first/last
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
     * Routine description & section descriptions
@@ -76,6 +75,9 @@ client & server repositories since they are tightly integrated.
     * Subscribe Link
     * Share w/ specific users
     * Multiple routine editors
+* Routine Feedback
+    * Allow users to comment on routines
+    * Versioning of routines, with list of changes between each version
 
 * Data Validation
     * Routines

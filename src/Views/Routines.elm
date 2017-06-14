@@ -12,7 +12,7 @@ import Models.Routines exposing (Routine)
 import Models.Sections exposing (Section, SectionExercise, SectionForm)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank, icon)
+import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank, icon, anyInArray)
 
 
 {-| Render a listing of Routines.
@@ -315,6 +315,10 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                     )
                 |> Maybe.withDefault ""
 
+        unselectedExercises =
+            exercises
+                |> List.filter (\e -> not <| anyInArray ((==) e.id) form.exercises)
+
         exerciseInputs =
             Array.toList <|
                 Array.indexedMap
@@ -325,7 +329,7 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
             Keyed.node "div"
                 []
                 [ ( toString <| Array.length form.exercises
-                  , addExerciseSelect exercises sectionIndex exerciseIndex
+                  , addExerciseSelect unselectedExercises sectionIndex exerciseIndex
                   )
                 ]
 
