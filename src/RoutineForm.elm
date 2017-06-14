@@ -76,6 +76,7 @@ resetSectionForm model form =
     , exercises =
         List.filter (\x -> x.section == form.section.id) model.sectionExercises
             |> Array.fromList
+    , isCollapsed = False
     }
 
 
@@ -84,6 +85,9 @@ resetSectionForm model form =
 updateSectionForm : SectionFormMessage -> Model -> SectionForm -> SectionForm
 updateSectionForm msg model ({ section, exercises } as sectionForm) =
     case msg of
+        ToggleCollapsed ->
+            { sectionForm | isCollapsed = not sectionForm.isCollapsed }
+
         SectionNameChange newName ->
             let
                 updatedSection =

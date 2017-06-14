@@ -384,7 +384,7 @@ initializeRoutineForm id model =
         sectionForms =
             if List.length sections > 0 then
                 sections
-                    |> List.map (\s -> { section = s, exercises = exercises s.id })
+                    |> List.map (\s -> { section = s, exercises = exercises s.id, isCollapsed = False })
                     |> Array.fromList
             else
                 Array.fromList [ initialSectionForm id ]

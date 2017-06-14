@@ -46,9 +46,9 @@ client & server repositories since they are tightly integrated.
     * Remove Already Selected Exercises from Exercises Selects
     * Disable up/down buttons when first/last
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
-    * Collapsible Sections
     * Routine description & section descriptions
     * Default reps/hold time/reps to progress per section & routine
+    * Add Up/Down Arrows for Exercise Progressions?
     * Error messages!
 * Table/Cards toggle for Exercise page(embed yt vids as card thumbnails?)
 * Add Routine Logging Forms

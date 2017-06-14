@@ -39,7 +39,8 @@ type RoutineFormMessage
 {-| A Message type used for changes to the Section forms.
 -}
 type SectionFormMessage
-    = SectionNameChange String
+    = ToggleCollapsed
+    | SectionNameChange String
     | MoveExerciseUp Int
     | MoveExerciseDown Int
     | AddSectionExercise

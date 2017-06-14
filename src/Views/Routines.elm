@@ -214,6 +214,13 @@ editSectionForm exercises index ({ section } as form) =
         formMsg =
             RoutineFormChange << SectionFormMsg index
 
+        ( collapseIcon, collapseClass ) =
+            Tuple.mapFirst icon <|
+                if form.isCollapsed then
+                    ( "chevron-right", "collapse" )
+                else
+                    ( "chevron-down", "" )
+
         sectionExerciseForms =
             Array.indexedMap (sectionExerciseForm exercises index) form.exercises
                 |> Array.toList
@@ -227,7 +234,10 @@ editSectionForm exercises index ({ section } as form) =
     in
         fieldset [ class "mb-4" ]
             [ legend []
-                [ text "Section: "
+                [ span
+                    [ onClick <| formMsg ToggleCollapsed, class "pointer" ]
+                    [ collapseIcon ]
+                , text " Section: "
                 , input
                     [ name "name"
                     , type_ "text"
@@ -247,8 +257,8 @@ editSectionForm exercises index ({ section } as form) =
                     ]
                     [ icon "arrow-down" ]
                 ]
-            , sectionExerciseForms
-            , div [ class "mt-1" ]
+            , div [ class collapseClass ] [ sectionExerciseForms ]
+            , div [ class <| "mt-1 " ++ collapseClass ]
                 [ button
                     [ class "btn btn-sm btn-secondary"
                     , onClick <| formMsg <| AddSectionExercise

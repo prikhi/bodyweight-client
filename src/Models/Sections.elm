@@ -112,6 +112,7 @@ sectionExerciseEncoder sectionExercise =
 type alias SectionForm =
     { section : Section
     , exercises : Array SectionExercise
+    , isCollapsed : Bool
     }
 
 
@@ -119,4 +120,5 @@ initialSectionForm : RoutineId -> SectionForm
 initialSectionForm routineId =
     { section = initialSection routineId
     , exercises = Array.fromList [ initialSectionExercise 0 ]
+    , isCollapsed = False
     }
