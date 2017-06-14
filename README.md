@@ -35,6 +35,8 @@ client & server repositories since they are tightly integrated.
 * Add Screenshot to README
 * Refactor backend URLs into `Endpoint` type
 * Refactor view/model folders into folders by datatype(`routines/model`)
+* Refactor API Command Messages into separate Message Type & Update Function
+* Fix 404 flash on initial load
 * Add Exercise Form
     * Radio buttons for Reps/Holds instead of checkbox
     * Strip URL from Youtube/Amazon ID fields
@@ -44,7 +46,6 @@ client & server repositories since they are tightly integrated.
     * Remove Already Selected Exercises from Exercises Selects
     * Disable up/down buttons when first/last
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
-    * Hide `Reps to Progress` if only 1 exercise
     * Collapsible Sections
     * Routine description & section descriptions
     * Default reps/hold time/reps to progress per section & routine

@@ -333,6 +333,9 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
             else
                 text ""
 
+        multipleExercisesSelected =
+            Array.length form.exercises > 1
+
         repInput =
             ifSelected (not << .isHold) <|
                 span []
@@ -340,10 +343,11 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                         formMsg
                             << ChangeRepCount
                     , text " "
-                    , intField "Reps to Progress"
-                        "progress-reps"
-                        (toString form.repsToProgress)
-                        (formMsg << ChangeRepProgress)
+                    , htmlOrBlank multipleExercisesSelected <|
+                        intField "Reps to Progress"
+                            "progress-reps"
+                            (toString form.repsToProgress)
+                            (formMsg << ChangeRepProgress)
                     ]
 
         holdInput =
@@ -353,10 +357,11 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                         formMsg
                             << ChangeHoldTime
                     , text " "
-                    , intField "Time to Progress"
-                        "progress-time"
-                        (toString form.timeToProgress)
-                        (formMsg << ChangeHoldProgress)
+                    , htmlOrBlank multipleExercisesSelected <|
+                        intField "Time to Progress"
+                            "progress-time"
+                            (toString form.timeToProgress)
+                            (formMsg << ChangeHoldProgress)
                     ]
     in
         div [ class "col-12 col-md-6 col-xl-4" ]
