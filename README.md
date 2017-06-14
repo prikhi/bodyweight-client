@@ -43,7 +43,6 @@ client & server repositories since they are tightly integrated.
     * Error messages!
 * Add Routine Form
     * Autocomplete Exercise Selects
-    * Disable up/down buttons when first/last
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
     * Routine description & section descriptions
     * Default reps/hold time/reps to progress per section & routine

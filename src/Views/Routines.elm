@@ -2,7 +2,7 @@ module Views.Routines exposing (..)
 
 import Array exposing (Array)
 import Html exposing (..)
-import Html.Attributes exposing (type_, value, name, selected, checked, class)
+import Html.Attributes exposing (type_, value, name, selected, checked, class, disabled)
 import Html.Events exposing (onClick, onSubmit, onInput, onCheck)
 import Html.Keyed as Keyed
 import Messages exposing (..)
@@ -183,7 +183,10 @@ editRoutineForm { exercises, routineForm, sectionForms } =
                 , text " Is Public"
                 ]
             ]
-        , div [] <| Array.toList <| Array.indexedMap (editSectionForm exercises) sectionForms
+        , div [] <|
+            Array.toList <|
+                Array.indexedMap (editSectionForm exercises <| Array.length sectionForms)
+                    sectionForms
         , p [ class "mt-1" ]
             [ button
                 [ class "btn btn-sm btn-primary"
@@ -208,8 +211,8 @@ editRoutineForm { exercises, routineForm, sectionForms } =
 
 {-| Render the form for editing a single `Section` of a `Routine`.
 -}
-editSectionForm : List Exercise -> Int -> SectionForm -> Html Msg
-editSectionForm exercises index ({ section } as form) =
+editSectionForm : List Exercise -> Int -> Int -> SectionForm -> Html Msg
+editSectionForm exercises totalForms index ({ section } as form) =
     let
         formMsg =
             RoutineFormChange << SectionFormMsg index
@@ -221,8 +224,12 @@ editSectionForm exercises index ({ section } as form) =
                 else
                     ( "chevron-down", "" )
 
+        totalSectionExercises =
+            Array.length form.exercises
+
         sectionExerciseForms =
-            Array.indexedMap (sectionExerciseForm exercises index) form.exercises
+            Array.indexedMap (sectionExerciseForm exercises totalSectionExercises index)
+                form.exercises
                 |> Array.toList
                 |> div [ class "row justify-content-center" ]
 
@@ -249,11 +256,13 @@ editSectionForm exercises index ({ section } as form) =
                 , button
                     [ class "btn btn-sm btn-secondary"
                     , onClick <| RoutineFormChange <| MoveSectionUp index
+                    , disabled <| index == 0
                     ]
                     [ icon "arrow-up" ]
                 , button
                     [ class "btn btn-sm btn-secondary"
                     , onClick <| RoutineFormChange <| MoveSectionDown index
+                    , disabled <| index == totalForms - 1
                     ]
                     [ icon "arrow-down" ]
                 ]
@@ -291,8 +300,8 @@ editSectionForm exercises index ({ section } as form) =
 
 {-| Render the form for editing a single `SectionExercise` of a `Section`
 -}
-sectionExerciseForm : List Exercise -> Int -> Int -> SectionExercise -> Html Msg
-sectionExerciseForm exercises sectionIndex exerciseIndex form =
+sectionExerciseForm : List Exercise -> Int -> Int -> Int -> SectionExercise -> Html Msg
+sectionExerciseForm exercises totalForms sectionIndex exerciseIndex form =
     let
         sectionMsg =
             RoutineFormChange << SectionFormMsg sectionIndex
@@ -392,11 +401,13 @@ sectionExerciseForm exercises sectionIndex exerciseIndex form =
                         [ button
                             [ class "btn btn-sm btn-secondary"
                             , onClick <| sectionMsg <| MoveExerciseUp exerciseIndex
+                            , disabled <| exerciseIndex == 0
                             ]
                             [ icon "arrow-up" ]
                         , button
                             [ class "btn btn-sm btn-secondary"
                             , onClick <| sectionMsg <| MoveExerciseDown exerciseIndex
+                            , disabled <| exerciseIndex == totalForms - 1
                             ]
                             [ icon "arrow-down" ]
                         , text " "
