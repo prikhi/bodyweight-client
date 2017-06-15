@@ -39,12 +39,13 @@ client & server repositories since they are tightly integrated.
 * Fix 404 flash on initial load
 * Add Exercise Form
     * Radio buttons for Reps/Holds instead of checkbox
+        * Switch backend from bool to union type
     * Strip URL from Youtube/Amazon ID fields
     * Error messages!
 * Add Routine Form
+    * Refactor RoutineChange Messages into separate updateRoutineForm func/msg
     * Autocomplete Exercise Selects
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
-    * Routine description & section descriptions
     * Default reps/hold time/reps to progress per section & routine
     * Add Up/Down Arrows for Exercise Progressions?
     * Error messages!

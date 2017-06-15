@@ -14,6 +14,7 @@ type alias SectionId =
 type alias Section =
     { id : SectionId
     , name : String
+    , description : String
     , routine : RoutineId
     , order : Int
     }
@@ -21,22 +22,24 @@ type alias Section =
 
 initialSection : RoutineId -> Section
 initialSection routineId =
-    { id = 0, name = "", routine = routineId, order = 0 }
+    { id = 0, name = "", description = "", routine = routineId, order = 0 }
 
 
 sectionDecoder : Decode.Decoder Section
 sectionDecoder =
-    Decode.map4 Section
+    Decode.map5 Section
         (Decode.field "id" Decode.int)
         (Decode.field "name" Decode.string)
+        (Decode.field "description" Decode.string)
         (Decode.field "routine" Decode.int)
         (Decode.field "order" Decode.int)
 
 
 sectionEncoder : Section -> Encode.Value
-sectionEncoder { name, routine, order } =
+sectionEncoder { name, description, routine, order } =
     Encode.object
         [ ( "name", Encode.string name )
+        , ( "description", Encode.string description )
         , ( "routine", Encode.int routine )
         , ( "order", Encode.int order )
         ]

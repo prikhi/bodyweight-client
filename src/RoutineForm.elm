@@ -33,6 +33,13 @@ updateRoutineForm msg ({ routineForm, sectionForms } as model) =
             in
                 { model | routineForm = updatedForm }
 
+        RoutineDescriptionChange newDescription ->
+            let
+                updatedForm =
+                    { routineForm | description = newDescription }
+            in
+                { model | routineForm = updatedForm }
+
         MoveSectionUp sectionIndex ->
             { model | sectionForms = swapIndexes sectionIndex (sectionIndex - 1) sectionForms }
 
@@ -92,6 +99,13 @@ updateSectionForm msg model ({ section, exercises } as sectionForm) =
             let
                 updatedSection =
                     { section | name = newName }
+            in
+                { sectionForm | section = updatedSection }
+
+        SectionDescriptionChange description ->
+            let
+                updatedSection =
+                    { section | description = description }
             in
                 { sectionForm | section = updatedSection }
 

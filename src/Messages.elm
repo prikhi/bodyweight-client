@@ -29,6 +29,7 @@ type RoutineFormMessage
     = RoutineNameChange String
     | RoutineCopyrightChange String
     | RoutinePublicChange Bool
+    | RoutineDescriptionChange String
     | MoveSectionUp Int
     | MoveSectionDown Int
     | AddSection
@@ -41,6 +42,7 @@ type RoutineFormMessage
 type SectionFormMessage
     = ToggleCollapsed
     | SectionNameChange String
+    | SectionDescriptionChange String
     | MoveExerciseUp Int
     | MoveExerciseDown Int
     | AddSectionExercise

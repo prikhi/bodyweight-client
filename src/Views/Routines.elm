@@ -2,7 +2,7 @@ module Views.Routines exposing (..)
 
 import Array exposing (Array)
 import Html exposing (..)
-import Html.Attributes exposing (type_, value, name, selected, checked, class, disabled)
+import Html.Attributes exposing (type_, value, name, selected, checked, class, id, disabled, for)
 import Html.Events exposing (onClick, onSubmit, onInput, onCheck)
 import Html.Keyed as Keyed
 import Messages exposing (..)
@@ -12,7 +12,7 @@ import Models.Routines exposing (Routine)
 import Models.Sections exposing (Section, SectionExercise, SectionForm)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (onSelectInt, findById, textField, intField, navLink, htmlOrBlank, icon, anyInArray)
+import Utils exposing (onSelectInt, findById, textField, intField, formField, navLink, htmlOrBlank, icon, anyInArray)
 
 
 {-| Render a listing of Routines.
@@ -28,7 +28,7 @@ routinesPage routines =
 {-| Render the details of a single `Routine`.
 -}
 routinePage : Model -> Routine -> Html Msg
-routinePage model { id, name, copyright } =
+routinePage model { id, name, description, copyright } =
     let
         sections =
             List.filter (\s -> s.routine == id) model.sections
@@ -50,6 +50,8 @@ routinePage model { id, name, copyright } =
                 ]
             , htmlOrBlank (not <| String.isEmpty copyright) <|
                 p [] [ small [] [ text "Copyright: ", text copyright ] ]
+            , htmlOrBlank (not <| String.isEmpty description) <|
+                p [] [ text description ]
             , div [] <|
                 List.map (sectionTable model) sections
             ]
@@ -58,13 +60,15 @@ routinePage model { id, name, copyright } =
 {-| Render a Routine's Section as a Table.
 -}
 sectionTable : Model -> Section -> Html Msg
-sectionTable model { id, name } =
+sectionTable model { id, name, description } =
     let
         sectionExercises =
             List.filter (\se -> se.section == id) model.sectionExercises
     in
         div []
             [ h2 [] [ text name ]
+            , htmlOrBlank (not <| String.isEmpty description) <|
+                p [] [ text description ]
             , table [ class "table table-sm table-striped" ]
                 [ thead []
                     [ th [] [ text "Exercise" ]
@@ -171,6 +175,15 @@ editRoutineForm { exercises, routineForm, sectionForms } =
         , br [] []
         , textField "Copyright" "copyright" routineForm.copyright (RoutineFormChange << RoutineCopyrightChange)
         , br [] []
+        , formField "Description: " <|
+            div []
+                [ textarea
+                    [ name "description"
+                    , value routineForm.description
+                    , onInput <| RoutineFormChange << RoutineDescriptionChange
+                    ]
+                    []
+                ]
         , div [ class "form-check" ]
             [ label [ class "form-check-label" ]
                 [ input
@@ -265,6 +278,19 @@ editSectionForm exercises totalForms index ({ section } as form) =
                     , disabled <| index == totalForms - 1
                     ]
                     [ icon "arrow-down" ]
+                ]
+            , div [ class collapseClass ]
+                [ div [ class "form-group" ]
+                    [ label [ for <| "section-desc-" ++ toString index ]
+                        [ text "Description:" ]
+                    , textarea
+                        [ name "description"
+                        , id <| "section-desc-" ++ toString index
+                        , value section.description
+                        , onInput <| formMsg << SectionDescriptionChange
+                        ]
+                        []
+                    ]
                 ]
             , div [ class collapseClass ] [ sectionExerciseForms ]
             , div [ class <| "mt-1 " ++ collapseClass ]
