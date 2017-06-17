@@ -13,6 +13,10 @@ is supported. Eventually we will support:
 * Exporting Routines & Log Entries (Markdown, CSV)
 * Reports & Graphs
 
+The API server lives in a [separate
+repository](https://github.com/prikhi/bodyweight-server), but the two repos
+will probably be merged at some point.
+
 # Setup
 
 ```
