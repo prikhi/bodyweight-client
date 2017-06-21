@@ -38,12 +38,12 @@
     "file-loader": "^0.11.2",
     "font-awesome": "^4.7.0",
     "node-sass": "^4.5.3",
-    "sass-loader": "^6.0.5",
+    "sass-loader": "^6.0.6",
     "style-loader": "^0.18.2",
     "url-loader": "^0.5.9",
     "watch-run": "^1.2.5",
-    "webpack": "^2.6.1",
+    "webpack": "^3.0.0",
     "webpack-dev-middleware": "^1.10.2",
-    "webpack-dev-server": "^2.4.5"
+    "webpack-dev-server": "^2.5.0"
   }
 }
