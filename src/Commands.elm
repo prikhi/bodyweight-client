@@ -1,6 +1,7 @@
 module Commands exposing (..)
 
 import Array exposing (Array)
+import Auth
 import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, withHeader, withJsonBody)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -18,6 +19,15 @@ fetchForRoute : Route -> Cmd Msg
 fetchForRoute route =
     case route of
         HomeRoute ->
+            Cmd.none
+
+        LoginRoute ->
+            Cmd.none
+
+        RegisterRoute ->
+            Cmd.none
+
+        LogoutRoute ->
             Cmd.none
 
         ExercisesRoute ->
@@ -130,6 +140,47 @@ createOrUpdateArray selector createFunc updateFunc =
         (\i -> selector >> createOrUpdate (createFunc i) (updateFunc i))
         >> Array.toList
         >> Cmd.batch
+
+
+
+{- Auth -}
+
+
+register : Auth.Form -> Cmd Msg
+register form =
+    create "users/register"
+        (Encode.object
+            [ ( "registrationName", Encode.string form.username )
+            , ( "registrationPassword", Encode.string form.password )
+            , ( "registrationEmail", Encode.string "" )
+            ]
+        )
+        (Decode.field "user" Auth.userDecoder)
+        AuthorizeUser
+
+
+login : Auth.Form -> Cmd Msg
+login form =
+    create "users/login"
+        (Encode.object
+            [ ( "loginName", Encode.string form.username )
+            , ( "loginPassword", Encode.string form.password )
+            ]
+        )
+        (Decode.field "user" Auth.userDecoder)
+        AuthorizeUser
+
+
+reauthorize : String -> Int -> Cmd Msg
+reauthorize authToken userId =
+    create "users/reauthorize"
+        (Encode.object
+            [ ( "authToken", Encode.string authToken )
+            , ( "authUserId", Encode.int userId )
+            ]
+        )
+        (Decode.field "user" Auth.userDecoder)
+        AuthorizeUser
 
 
 

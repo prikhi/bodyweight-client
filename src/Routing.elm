@@ -10,6 +10,9 @@ import UrlParser exposing (..)
 -}
 type Route
     = HomeRoute
+    | LoginRoute
+    | RegisterRoute
+    | LogoutRoute
     | ExercisesRoute
     | ExerciseAddRoute
     | ExerciseRoute ExerciseId
@@ -27,7 +30,10 @@ matchers : Parser (Route -> a) a
 matchers =
     oneOf
         [ map HomeRoute top
-        , map ExercisesRoute (s "exercises" </> s "")
+        , map LoginRoute (s "login")
+        , map RegisterRoute (s "register")
+        , map LogoutRoute (s "logout")
+        , map ExercisesRoute (s "exercises")
         , map ExerciseAddRoute (s "exercises" </> s "add")
         , map ExerciseEditRoute (s "exercises" </> int </> s "edit")
         , map ExerciseRoute (s "exercises" </> int)
@@ -62,6 +68,15 @@ reverse route =
                 case route of
                     HomeRoute ->
                         ""
+
+                    LoginRoute ->
+                        "login"
+
+                    RegisterRoute ->
+                        "register"
+
+                    LogoutRoute ->
+                        "logout"
 
                     ExercisesRoute ->
                         "exercises"

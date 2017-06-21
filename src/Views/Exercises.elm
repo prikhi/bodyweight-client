@@ -1,5 +1,6 @@
 module Views.Exercises exposing (..)
 
+import Auth
 import Html exposing (..)
 import Html.Attributes exposing (href, name, value, checked, type_, width, height, src, attribute, class)
 import Html.Events exposing (onInput, onClick, onCheck, onSubmit)
@@ -8,7 +9,7 @@ import Model exposing (Model)
 import Models.Exercises exposing (Exercise, exerciseType)
 import Routing exposing (Route(..), reverse)
 import String
-import Utils exposing (formField, textField, navLink)
+import Utils exposing (formField, textField, navLink, ifAdmin)
 
 
 {-| Render a listing of Exercises
@@ -23,8 +24,8 @@ exercisesPage exercises =
 
 {-| Render an Exercise's details.
 -}
-exercisePage : Exercise -> Html Msg
-exercisePage ({ id, name, description } as exercise) =
+exercisePage : Auth.Status -> Exercise -> Html Msg
+exercisePage authStatus ({ id, name, description } as exercise) =
     let
         descriptionText =
             if String.isEmpty description then
@@ -66,19 +67,20 @@ exercisePage ({ id, name, description } as exercise) =
     in
         div []
             [ h1 [] [ text name ]
-            , p []
-                [ button
-                    [ class "btn btn-sm btn-secondary"
-                    , onClick <| NavigateTo <| ExerciseEditRoute id
+            , ifAdmin authStatus <|
+                p []
+                    [ button
+                        [ class "btn btn-sm btn-secondary"
+                        , onClick <| NavigateTo <| ExerciseEditRoute id
+                        ]
+                        [ text "Edit" ]
+                    , text " "
+                    , button
+                        [ class "btn btn-sm btn-danger"
+                        , onClick <| DeleteExerciseClicked id
+                        ]
+                        [ text "Delete" ]
                     ]
-                    [ text "Edit" ]
-                , text " "
-                , button
-                    [ class "btn btn-sm btn-danger"
-                    , onClick <| DeleteExerciseClicked id
-                    ]
-                    [ text "Delete" ]
-                ]
             , youtubeIframe
             , p []
                 [ b [] [ text <| exerciseType exercise ]

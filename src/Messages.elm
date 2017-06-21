@@ -1,5 +1,6 @@
 module Messages exposing (..)
 
+import Auth
 import HttpBuilder exposing (Error)
 import Models.Exercises exposing (ExerciseId, Exercise)
 import Models.Routines exposing (RoutineId, Routine)
@@ -68,6 +69,8 @@ type SectionExerciseFormMessage
 type Msg
     = UrlUpdate Route
     | NavigateTo Route
+    | AuthMsg Auth.Msg
+    | SubmitAuthForm
     | DeleteExerciseClicked ExerciseId
     | ExerciseFormChange ExerciseFormMessage
     | SubmitExerciseForm
@@ -86,6 +89,7 @@ type Msg
     | DeleteSectionExerciseClicked Int Int SectionExerciseId
     | SubmitEditRoutineForm
     | CancelEditRoutineForm
+    | AuthorizeUser (HttpMsg Auth.User)
     | FetchRoutines (HttpMsg (List Routine))
     | FetchRoutine (HttpMsg Routine)
     | CreateRoutine (HttpMsg Routine)

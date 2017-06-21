@@ -1,5 +1,6 @@
 module Utils exposing (..)
 
+import Auth
 import Array exposing (Array)
 import Html exposing (Html, Attribute, label, input, text, a, node)
 import Html.Attributes exposing (name, value, type_, href, class)
@@ -8,6 +9,22 @@ import Json.Decode as Decode
 import Messages exposing (Msg(NavigateTo))
 import Routing exposing (Route, reverse)
 import String
+
+
+{-| Return the given HTML if the User is an Admin, otherwise return a blank
+text node.
+-}
+ifAdmin : Auth.Status -> Html msg -> Html msg
+ifAdmin authStatus content =
+    case authStatus of
+        Auth.Authorized { isAdmin } ->
+            if isAdmin then
+                content
+            else
+                text ""
+
+        _ ->
+            text ""
 
 
 {-| Decode the `target.value` value of an Html Event as an Int.

@@ -1,6 +1,7 @@
 module Update exposing (update)
 
 import Array exposing (Array)
+import Auth
 import Commands as C
 import Messages exposing (..)
 import Model exposing (Model, initialModel)
@@ -8,6 +9,7 @@ import Models.Exercises exposing (ExerciseId, Exercise, initialExercise)
 import Models.Routines exposing (RoutineId, initialRoutine)
 import Models.Sections exposing (initialSectionForm)
 import Navigation
+import Ports
 import RemoteStatus
 import RoutineForm exposing (updateRoutineForm)
 import Routing exposing (Route(..), routeFromResult, reverse)
@@ -19,9 +21,18 @@ import Utils exposing (findById, replaceById, updateByIndex, removeByIndex)
 urlUpdate : Route -> Model -> ( Model, Cmd Msg )
 urlUpdate route model =
     let
-        {- Initialize Forms on Add/Edit Pages -}
+        {- Initialize Forms on Add/Edit Pages & Auth Status on Auth Pages -}
         updatedModel =
             case route of
+                LoginRoute ->
+                    { model | authStatus = Auth.LoggingIn }
+
+                RegisterRoute ->
+                    { model | authStatus = Auth.Registering }
+
+                LogoutRoute ->
+                    { model | authStatus = Auth.Anonymous }
+
                 ExerciseAddRoute ->
                     { model | exerciseForm = initialExercise }
 
@@ -36,8 +47,18 @@ urlUpdate route model =
 
                 _ ->
                     model
+
+        routeCommand =
+            case route of
+                LogoutRoute ->
+                    Ports.removeAuthDetails ()
+
+                _ ->
+                    Cmd.none
     in
-        ( { updatedModel | route = route }, C.fetchForRoute route )
+        ( { updatedModel | route = route }
+        , Cmd.batch [ C.fetchForRoute route, routeCommand ]
+        )
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -48,6 +69,23 @@ update msg model =
 
         NavigateTo route ->
             ( model, Navigation.newUrl <| reverse route )
+
+        AuthMsg subMsg ->
+            ( { model | authForm = Auth.update subMsg model.authForm }, Cmd.none )
+
+        SubmitAuthForm ->
+            case model.authStatus of
+                Auth.Registering ->
+                    if model.authForm.password == model.authForm.passwordAgain then
+                        ( model, C.register model.authForm )
+                    else
+                        ( model, Cmd.none )
+
+                Auth.LoggingIn ->
+                    ( model, C.login model.authForm )
+
+                _ ->
+                    ( model, Cmd.none )
 
         DeleteExerciseClicked exerciseId ->
             findById exerciseId model.exercises
@@ -69,6 +107,30 @@ update msg model =
                 ( model, Navigation.newUrl <| reverse ExercisesRoute )
             else
                 ( model, Navigation.newUrl <| reverse <| ExerciseRoute model.exerciseForm.id )
+
+        AuthorizeUser (Ok user) ->
+            let
+                storeTokenCommand =
+                    if model.authForm.remember then
+                        Ports.storeAuthDetails ( user.authToken, user.id )
+                    else
+                        Cmd.none
+
+                navigateCommand =
+                    if model.route == LoginRoute || model.route == RegisterRoute then
+                        Navigation.newUrl <| reverse HomeRoute
+                    else
+                        Cmd.none
+            in
+                ( { model
+                    | authStatus = Auth.Authorized user
+                    , authForm = Auth.initialForm
+                  }
+                , Cmd.batch [ navigateCommand, storeTokenCommand ]
+                )
+
+        AuthorizeUser (Err _) ->
+            ( model, Cmd.none )
 
         FetchExercises (Ok newExercises) ->
             ( { model | exercises = List.sortBy .name newExercises }, Cmd.none )

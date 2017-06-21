@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import Commands exposing (fetchForRoute)
+import Commands exposing (fetchForRoute, reauthorize)
 import Messages exposing (Msg(UrlUpdate))
 import Model exposing (Model, initialModel)
 import Navigation
@@ -9,11 +9,20 @@ import Update exposing (update)
 import View exposing (view)
 
 
+{-| Accept an Auth Token on initialization if we were told to remember the
+User's Login.
+-}
+type alias Flags =
+    { authToken : Maybe String
+    , authUserId : Maybe Int
+    }
+
+
 {-| Hook the update/view functions up to the initial model.
 -}
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Navigation.program parser
+    Navigation.programWithFlags parser
         { init = init
         , update = update
         , subscriptions = always Sub.none
@@ -23,13 +32,19 @@ main =
 
 {-| Generate the initial model & commands for the route.
 -}
-init : Navigation.Location -> ( Model, Cmd Msg )
-init location =
+init : Flags -> Navigation.Location -> ( Model, Cmd Msg )
+init flags location =
     let
         route =
             routeParser location
+
+        reauthorizeCmd =
+            Maybe.map2 reauthorize flags.authToken flags.authUserId
+                |> Maybe.withDefault Cmd.none
     in
-        ( initialModel route, fetchForRoute route )
+        ( initialModel route
+        , Cmd.batch [ fetchForRoute route, reauthorizeCmd ]
+        )
 
 
 {-| Parse the Location and wrap the resulting Route with a UrlUpdate Msg.

@@ -1,5 +1,6 @@
 module View exposing (view)
 
+import Auth
 import Html exposing (Html, div, text, h1, p)
 import Html.Attributes exposing (class)
 import Messages exposing (Msg(..))
@@ -15,7 +16,7 @@ import Views.Routines exposing (routinesPage, routinePage, addRoutineForm, editR
 -}
 view : Model -> Html Msg
 view model =
-    div [] [ nav, div [ class "container" ] [ page model ] ]
+    div [] [ nav model.authStatus, div [ class "container" ] [ page model ] ]
 
 
 {-| Render the Page Content using the current Route.
@@ -29,6 +30,15 @@ page ({ route, exercises, routines } as model) =
         NotFoundRoute ->
             notFoundPage
 
+        LoginRoute ->
+            Auth.view AuthMsg NavigateTo SubmitAuthForm model.authStatus model.authForm
+
+        RegisterRoute ->
+            Auth.view AuthMsg NavigateTo SubmitAuthForm model.authStatus model.authForm
+
+        LogoutRoute ->
+            text "You have successfully been logged out."
+
         ExercisesRoute ->
             exercisesPage exercises
 
@@ -37,7 +47,7 @@ page ({ route, exercises, routines } as model) =
 
         ExerciseRoute id ->
             findById id exercises
-                |> Maybe.map exercisePage
+                |> Maybe.map (exercisePage model.authStatus)
                 |> Maybe.withDefault notFoundPage
 
         ExerciseEditRoute id ->

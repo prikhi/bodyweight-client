@@ -1,6 +1,7 @@
 module Model exposing (..)
 
 import Array exposing (Array)
+import Auth
 import Models.Exercises exposing (Exercise, initialExercise)
 import Models.Routines exposing (Routine, initialRoutine)
 import Models.Sections exposing (Section, SectionForm, SectionExercise, initialSectionForm)
@@ -20,6 +21,8 @@ type alias Model =
     , sectionForms : Array SectionForm
     , savingStatus : RemoteStatus.Status
     , route : Route
+    , authStatus : Auth.Status
+    , authForm : Auth.Form
     }
 
 
@@ -36,4 +39,6 @@ initialModel route =
     , sectionExercises = []
     , savingStatus = RemoteStatus.initial
     , route = route
+    , authStatus = Auth.initial route
+    , authForm = Auth.initialForm
     }

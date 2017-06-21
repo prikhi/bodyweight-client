@@ -55,9 +55,10 @@ client & server repositories since they are tightly integrated.
     * Error messages!
 * Table/Cards toggle for Exercise page(embed yt vids as card thumbnails?)
 * Add Routine Logging Forms
-    * Log a completed workout
+    * Log an already completed workout
     * Log a workout as you complete it
 * Users
+    * Login/logout of all open tabs(watch for `window.storage` event)
     * Profiles & profile pages
         * Name
         * Subscribed routines
@@ -70,6 +71,7 @@ client & server repositories since they are tightly integrated.
     * Page for admin users to see exercises w/o YouTube or Amazon links
     * Only a user can see their private routines
     * User can subscribe to a routine(Add subscriber count to Routines table)
+    * Email field & lost password functionality
 * Homepage
     * Short description of BWF
     * Links to subreddit
