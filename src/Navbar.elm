@@ -54,14 +54,14 @@ nav authStatus =
                 , type_ "button"
                 ]
                 [ span [ class "navbar-toggler-icon" ] [] ]
-            , a
-                [ class "navbar-brand"
-                , href <| reverse HomeRoute
-                , onClickNoDefault <| NavigateTo HomeRoute
-                ]
-                [ text "BodyWeight Logger" ]
-            , div [ class "container ml-0" ]
-                [ div [ class "collapse navbar-collapse", id "navbarContent" ]
+            , div [ class "container ml-0 ml-md-auto" ]
+                [ a
+                    [ class "navbar-brand"
+                    , href <| reverse HomeRoute
+                    , onClickNoDefault <| NavigateTo HomeRoute
+                    ]
+                    [ text "BodyWeight Logger" ]
+                , div [ class "collapse navbar-collapse", id "navbarContent" ]
                     [ ul [ class "navbar-nav mr-auto" ]
                         [ navbarLink "Routines" RoutinesRoute
                         , ifAuthorized <| navbarLink "Add Routine" RoutineAddRoute
