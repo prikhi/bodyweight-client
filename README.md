@@ -4,14 +4,21 @@
 
 A Bodyweight Workout Log frontend written in Elm.
 
-Right now only Adding/Viewing/Listing/Editing/Deleting of Exercises & Routines
-is supported. Eventually we will support:
+Right now only the following is supported:
+
+* Creating an Account
+* Viewing Routines & individual Exercises
+* Registered Users can Create/Edit/Delete their Routines
+* Admins can Create/Edit/Delete Exercises
+
+
+Eventually we will support:
 
 * Logging Workouts
-* Users
 * Subscribing to Routines
 * Exporting Routines & Log Entries (Markdown, CSV)
 * Reports & Graphs
+
 
 The API server lives in a [separate
 repository](https://github.com/prikhi/bodyweight-server), but the two repos
@@ -57,6 +64,11 @@ client & server repositories since they are tightly integrated.
 * Add Routine Logging Forms
     * Log an already completed workout
     * Log a workout as you complete it
+    * Export all logs to Excel & CSV
+    * Export single log to Markdown
+* Routines
+    * Export to CSV & Markdown
+    * Multiple Editors
 * Users
     * Login/logout of all open tabs(watch for `window.storage` event)
     * Profiles & profile pages
@@ -74,13 +86,13 @@ client & server repositories since they are tightly integrated.
     * Email field & lost password functionality
 * Homepage
     * Short description of BWF
+    * For anonymous users, benefits of registering(add/sub/log routines)
     * Links to subreddit
-    * Links to subscribed routines & logging form for those routines
+    * Links to a User's subscribed routines & logging form for those routines
 * Sharing private routines w/ users
     * Password-protected
     * Subscribe Link
-    * Share w/ specific users
-    * Multiple routine editors
+    * ?Share w/ specific users?
 * Routine Feedback
     * Allow users to comment on routines
     * Versioning of routines, with list of changes between each version
