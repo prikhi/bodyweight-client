@@ -1,5 +1,6 @@
 module Main exposing (main)
 
+import Auth
 import Commands exposing (fetchForRoute, reauthorize)
 import Messages exposing (Msg(UrlUpdate))
 import Model exposing (Model, initialModel)
@@ -38,13 +39,19 @@ init flags location =
         route =
             routeParser location
 
+        fetchCmd =
+            case ( flags.authToken, flags.authUserId ) of
+                ( Just _, Just _ ) ->
+                    Cmd.none
+
+                _ ->
+                    fetchForRoute Auth.Anonymous route
+
         reauthorizeCmd =
             Maybe.map2 reauthorize flags.authToken flags.authUserId
                 |> Maybe.withDefault Cmd.none
     in
-        ( initialModel route
-        , Cmd.batch [ fetchForRoute route, reauthorizeCmd ]
-        )
+        ( initialModel route, Cmd.batch [ fetchCmd, reauthorizeCmd ] )
 
 
 {-| Parse the Location and wrap the resulting Route with a UrlUpdate Msg.

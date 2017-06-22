@@ -77,6 +77,18 @@ initialForm =
     }
 
 
+{-| Retrieve the User's ID if Authorized.
+-}
+getUserId : Status -> Maybe Int
+getUserId status =
+    case status of
+        Authorized { id } ->
+            Just id
+
+        _ ->
+            Nothing
+
+
 
 -- Messages
 

@@ -15,8 +15,8 @@ import Task
 
 {-| Return a command that fetches any relevant data for the Route.
 -}
-fetchForRoute : Route -> Cmd Msg
-fetchForRoute route =
+fetchForRoute : Auth.Status -> Route -> Cmd Msg
+fetchForRoute authStatus route =
     case route of
         HomeRoute ->
             Cmd.none
@@ -31,41 +31,53 @@ fetchForRoute route =
             Cmd.none
 
         ExercisesRoute ->
-            fetchExercises
+            fetchExercises authStatus
 
         ExerciseAddRoute ->
             Cmd.none
 
         ExerciseRoute id ->
-            fetchExercise id
+            fetchExercise authStatus id
 
         ExerciseEditRoute id ->
-            fetchExercise id
+            fetchExercise authStatus id
 
         RoutinesRoute ->
-            fetchRoutines
+            fetchRoutines authStatus
 
         RoutineAddRoute ->
             Cmd.none
 
         RoutineRoute id ->
             Cmd.batch
-                [ fetchExercises
-                , fetchRoutine id
-                , fetchSections
-                , fetchSectionExercises
+                [ fetchExercises authStatus
+                , fetchRoutine authStatus id
+                , fetchSections authStatus
+                , fetchSectionExercises authStatus
                 ]
 
         RoutineEditRoute id ->
             Cmd.batch
-                [ fetchExercises
-                , fetchRoutine id
-                , fetchSections
-                , fetchSectionExercises
+                [ fetchExercises authStatus
+                , fetchRoutine authStatus id
+                , fetchSections authStatus
+                , fetchSectionExercises authStatus
                 ]
 
         NotFoundRoute ->
             Cmd.none
+
+
+{-| Add a `Auth-Token` Header if the User is Authorized.
+-}
+withAuthHeader : Auth.Status -> HttpBuilder.RequestBuilder -> HttpBuilder.RequestBuilder
+withAuthHeader status builder =
+    case status of
+        Auth.Authorized { authToken } ->
+            withHeader "Auth-Token" authToken builder
+
+        _ ->
+            builder
 
 
 {-| Perform a request on the backend server, mapping the `Result` to some message.
@@ -77,38 +89,42 @@ performApiRequest msg =
 
 {-| Fetch data from the backend server.
 -}
-fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
-fetch url decoder msg =
+fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+fetch url decoder msg authStatus =
     get ("/api/" ++ url)
+        |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
 
 
 {-| Create data on the backend server.
 -}
-create : String -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
-create url jsonValue decoder msg =
+create : String -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+create url jsonValue decoder msg authStatus =
     post ("/api/" ++ url)
         |> withJsonBody jsonValue
+        |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
 
 
 {-| Update a resource on the backend server.
 -}
-update : String -> Int -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Cmd msg
-update url id jsonValue decoder msg =
+update : String -> Int -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+update url id jsonValue decoder msg authStatus =
     put ("/api/" ++ url ++ "/" ++ toString id)
         |> withJsonBody jsonValue
+        |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
 
 
 {-| Delete a resource from the backend server.
 -}
-delete : String -> Int -> (HttpMsg Int -> msg) -> Cmd msg
-delete url id msg =
+delete : String -> Int -> (HttpMsg Int -> msg) -> Auth.Status -> Cmd msg
+delete url id msg authStatus =
     HttpBuilder.delete ("/api/" ++ url ++ "/" ++ toString id)
+        |> withAuthHeader authStatus
         |> send (jsonReader (Decode.succeed id)) stringReader
         |> performApiRequest msg
 
@@ -157,6 +173,7 @@ register form =
         )
         (Decode.field "user" Auth.userDecoder)
         AuthorizeUser
+        Auth.Anonymous
 
 
 login : Auth.Form -> Cmd Msg
@@ -169,6 +186,7 @@ login form =
         )
         (Decode.field "user" Auth.userDecoder)
         AuthorizeUser
+        Auth.Anonymous
 
 
 reauthorize : String -> Int -> Cmd Msg
@@ -181,124 +199,132 @@ reauthorize authToken userId =
         )
         (Decode.field "user" Auth.userDecoder)
         AuthorizeUser
+        Auth.Anonymous
 
 
 
 {- Exercises -}
 
 
-fetchExercises : Cmd Msg
-fetchExercises =
-    fetch "exercises" (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises
+fetchExercises : Auth.Status -> Cmd Msg
+fetchExercises authStatus =
+    fetch "exercises" (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises authStatus
 
 
-fetchExercise : ExerciseId -> Cmd Msg
-fetchExercise id =
-    fetch ("exercises/" ++ toString id) (Decode.field "exercise" exerciseDecoder) FetchExercise
+fetchExercise : Auth.Status -> ExerciseId -> Cmd Msg
+fetchExercise authStatus id =
+    fetch ("exercises/" ++ toString id) (Decode.field "exercise" exerciseDecoder) FetchExercise authStatus
 
 
-createExercise : Exercise -> Cmd Msg
-createExercise exercise =
+createExercise : Auth.Status -> Exercise -> Cmd Msg
+createExercise authStatus exercise =
     create "exercises"
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         (Decode.field "exercise" exerciseDecoder)
         CreateExercise
+        authStatus
 
 
-updateExercise : Exercise -> Cmd Msg
-updateExercise exercise =
+updateExercise : Auth.Status -> Exercise -> Cmd Msg
+updateExercise authStatus exercise =
     update "exercises"
         exercise.id
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         (Decode.field "exercise" exerciseDecoder)
         CreateExercise
+        authStatus
 
 
-deleteExercise : ExerciseId -> Cmd Msg
-deleteExercise exerciseId =
-    delete "exercises" exerciseId DeleteExercise
+deleteExercise : Auth.Status -> ExerciseId -> Cmd Msg
+deleteExercise authStatus exerciseId =
+    delete "exercises" exerciseId DeleteExercise authStatus
 
 
 
 {- Routines -}
 
 
-fetchRoutines : Cmd Msg
-fetchRoutines =
-    fetch "routines" (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines
+fetchRoutines : Auth.Status -> Cmd Msg
+fetchRoutines authStatus =
+    fetch "routines" (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines authStatus
 
 
-fetchRoutine : RoutineId -> Cmd Msg
-fetchRoutine routineId =
-    fetch ("routines/" ++ toString routineId) (Decode.field "routine" routineDecoder) FetchRoutine
+fetchRoutine : Auth.Status -> RoutineId -> Cmd Msg
+fetchRoutine authStatus routineId =
+    fetch ("routines/" ++ toString routineId) (Decode.field "routine" routineDecoder) FetchRoutine authStatus
 
 
-createRoutine : Routine -> Cmd Msg
-createRoutine routine =
+createRoutine : Auth.Status -> Routine -> Cmd Msg
+createRoutine authStatus routine =
     create "routines"
         (Encode.object [ ( "routine", routineEncoder routine ) ])
         (Decode.field "routine" routineDecoder)
         CreateRoutine
+        authStatus
 
 
-updateRoutine : Routine -> Cmd Msg
-updateRoutine routine =
+updateRoutine : Auth.Status -> Routine -> Cmd Msg
+updateRoutine authStatus routine =
     update "routines"
         routine.id
         (Encode.object [ ( "routine", routineEncoder routine ) ])
         (Decode.field "routine" routineDecoder)
         UpdateRoutine
+        authStatus
 
 
-deleteRoutine : RoutineId -> Cmd Msg
-deleteRoutine routineId =
-    delete "routines" routineId DeleteRoutine
+deleteRoutine : Auth.Status -> RoutineId -> Cmd Msg
+deleteRoutine authStatus routineId =
+    delete "routines" routineId DeleteRoutine authStatus
 
 
 
 {- Sections -}
 
 
-fetchSections : Cmd Msg
-fetchSections =
-    fetch "sections" (Decode.field "section" (Decode.list sectionDecoder)) FetchSections
+fetchSections : Auth.Status -> Cmd Msg
+fetchSections authStatus =
+    fetch "sections" (Decode.field "section" (Decode.list sectionDecoder)) FetchSections authStatus
 
 
-createSection : Int -> Section -> Cmd Msg
-createSection index section =
+createSection : Auth.Status -> Int -> Section -> Cmd Msg
+createSection authStatus index section =
     create "sections"
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
         (Decode.field "section" sectionDecoder)
         (CreateSection index)
+        authStatus
 
 
-updateSection : Int -> Section -> Cmd Msg
-updateSection index section =
+updateSection : Auth.Status -> Int -> Section -> Cmd Msg
+updateSection authStatus index section =
     update "sections"
         section.id
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
         (Decode.field "section" sectionDecoder)
         (UpdateSection index)
+        authStatus
 
 
-deleteSection : Int -> SectionId -> Cmd Msg
-deleteSection index id =
-    delete "sections" id (DeleteSection index)
+deleteSection : Auth.Status -> Int -> SectionId -> Cmd Msg
+deleteSection authStatus index id =
+    delete "sections" id (DeleteSection index) authStatus
 
 
 
 {- Section Exercises -}
 
 
-fetchSectionExercises : Cmd Msg
-fetchSectionExercises =
+fetchSectionExercises : Auth.Status -> Cmd Msg
+fetchSectionExercises authStatus =
     fetch "sectionExercises"
         (Decode.field "sectionExercise" (Decode.list sectionExerciseDecoder))
         FetchSectionExercises
+        authStatus
 
 
-createSectionExercise : Int -> Int -> SectionExercise -> Cmd Msg
-createSectionExercise sectionIndex exerciseIndex sectionExercise =
+createSectionExercise : Auth.Status -> Int -> Int -> SectionExercise -> Cmd Msg
+createSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
     create "sectionExercises"
         (Encode.object
             [ ( "sectionExercise"
@@ -308,10 +334,11 @@ createSectionExercise sectionIndex exerciseIndex sectionExercise =
         )
         (Decode.field "sectionExercise" sectionExerciseDecoder)
         (CreateSectionExercise sectionIndex exerciseIndex)
+        authStatus
 
 
-updateSectionExercise : Int -> Int -> SectionExercise -> Cmd Msg
-updateSectionExercise sectionIndex exerciseIndex sectionExercise =
+updateSectionExercise : Auth.Status -> Int -> Int -> SectionExercise -> Cmd Msg
+updateSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
     update "sectionExercises"
         sectionExercise.id
         (Encode.object
@@ -322,8 +349,9 @@ updateSectionExercise sectionIndex exerciseIndex sectionExercise =
         )
         (Decode.field "sectionExercise" sectionExerciseDecoder)
         (UpdateSectionExercise sectionIndex exerciseIndex)
+        authStatus
 
 
-deleteSectionExercise : Int -> Int -> SectionExerciseId -> Cmd Msg
-deleteSectionExercise sectionIndex exerciseIndex id =
-    delete "sectionExercises" id (DeleteSectionExercise sectionIndex exerciseIndex)
+deleteSectionExercise : Auth.Status -> Int -> Int -> SectionExerciseId -> Cmd Msg
+deleteSectionExercise authStatus sectionIndex exerciseIndex id =
+    delete "sectionExercises" id (DeleteSectionExercise sectionIndex exerciseIndex) authStatus

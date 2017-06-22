@@ -57,7 +57,7 @@ urlUpdate route model =
                     Cmd.none
     in
         ( { updatedModel | route = route }
-        , Cmd.batch [ C.fetchForRoute route, routeCommand ]
+        , Cmd.batch [ C.fetchForRoute model.authStatus route, routeCommand ]
         )
 
 
@@ -89,7 +89,7 @@ update msg model =
 
         DeleteExerciseClicked exerciseId ->
             findById exerciseId model.exercises
-                |> Maybe.map (C.deleteExercise << .id)
+                |> Maybe.map (C.deleteExercise model.authStatus << .id)
                 |> Maybe.withDefault Cmd.none
                 |> \cmd -> ( model, cmd )
 
@@ -98,9 +98,9 @@ update msg model =
 
         SubmitExerciseForm ->
             if model.exerciseForm.id == 0 then
-                ( model, C.createExercise model.exerciseForm )
+                ( model, C.createExercise model.authStatus model.exerciseForm )
             else
-                ( model, C.updateExercise model.exerciseForm )
+                ( model, C.updateExercise model.authStatus model.exerciseForm )
 
         CancelExerciseForm ->
             if model.exerciseForm.id == 0 then
@@ -127,7 +127,11 @@ update msg model =
                     , authForm = Auth.initialForm
                   }
                     |> reinitializeRoutineForm
-                , Cmd.batch [ navigateCommand, storeTokenCommand ]
+                , Cmd.batch
+                    [ navigateCommand
+                    , storeTokenCommand
+                    , C.fetchForRoute (Auth.Authorized user) model.route
+                    ]
                 )
 
         AuthorizeUser (Err _) ->
@@ -171,13 +175,13 @@ update msg model =
             ( model, Cmd.none )
 
         DeleteRoutineClicked id ->
-            ( model, C.deleteRoutine id )
+            ( model, C.deleteRoutine model.authStatus id )
 
         RoutineFormChange subMsg ->
             ( updateRoutineForm subMsg model, Cmd.none )
 
         SubmitAddRoutineForm ->
-            ( model, C.createRoutine model.routineForm )
+            ( model, C.createRoutine model.authStatus model.routineForm )
 
         CancelAddRoutineForm ->
             ( model, Navigation.newUrl <| reverse <| RoutinesRoute )
@@ -186,12 +190,15 @@ update msg model =
             ( model
             , Array.get index model.sectionForms
                 |> Maybe.map
-                    (.section >> C.createOrUpdate (C.createSection index) (C.updateSection index))
+                    (.section
+                        >> C.createOrUpdate (C.createSection model.authStatus index)
+                            (C.updateSection model.authStatus index)
+                    )
                 |> Maybe.withDefault Cmd.none
             )
 
         DeleteSectionClicked sectionIndex id ->
-            ( model, C.deleteSection sectionIndex id )
+            ( model, C.deleteSection model.authStatus sectionIndex id )
 
         SaveSectionExerciseClicked sectionIndex exerciseIndex ->
             ( model
@@ -201,18 +208,18 @@ update msg model =
                         >> Array.get exerciseIndex
                         >> Maybe.map
                             (C.createOrUpdate
-                                (C.createSectionExercise sectionIndex exerciseIndex)
-                                (C.updateSectionExercise sectionIndex exerciseIndex)
+                                (C.createSectionExercise model.authStatus sectionIndex exerciseIndex)
+                                (C.updateSectionExercise model.authStatus sectionIndex exerciseIndex)
                             )
                     )
                 |> Maybe.withDefault Cmd.none
             )
 
         DeleteSectionExerciseClicked sectionIndex exerciseIndex id ->
-            ( model, C.deleteSectionExercise sectionIndex exerciseIndex id )
+            ( model, C.deleteSectionExercise model.authStatus sectionIndex exerciseIndex id )
 
         SubmitEditRoutineForm ->
-            ( model, C.updateRoutine model.routineForm )
+            ( model, C.updateRoutine model.authStatus model.routineForm )
 
         {- Reset the RoutineForm & Redirect to the Routine's Details Page -}
         CancelEditRoutineForm ->
@@ -250,7 +257,10 @@ update msg model =
                 , routineForm = newRoutine
                 , savingStatus = RemoteStatus.start model.savingStatus
               }
-            , C.createOrUpdateArray .section C.createSection C.updateSection model.sectionForms
+            , C.createOrUpdateArray .section
+                (C.createSection model.authStatus)
+                (C.updateSection model.authStatus)
+                model.sectionForms
             )
 
         UpdateRoutine (Err _) ->
@@ -486,12 +496,12 @@ reinitializeRoutineForm model =
 {-| Enqueue the saving of a SectionForm's Exercises.
 -}
 enqueueSavingSectionExercises : Int -> Model -> ( Model, Cmd Msg )
-enqueueSavingSectionExercises index model =
+enqueueSavingSectionExercises index ({ authStatus } as model) =
     let
         saveSectionExercises { exercises } =
             C.createOrUpdateArray identity
-                (C.createSectionExercise index)
-                (C.updateSectionExercise index)
+                (C.createSectionExercise authStatus index)
+                (C.updateSectionExercise authStatus index)
                 exercises
     in
         ( { model
