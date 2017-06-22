@@ -126,6 +126,7 @@ update msg model =
                     | authStatus = Auth.Authorized user
                     , authForm = Auth.initialForm
                   }
+                    |> reinitializeRoutineForm
                 , Cmd.batch [ navigateCommand, storeTokenCommand ]
                 )
 
@@ -432,9 +433,19 @@ updateExerciseForm msg ({ exerciseForm } as model) =
 initializeRoutineForm : RoutineId -> Model -> Model
 initializeRoutineForm id model =
     let
+        maybeUserId =
+            Auth.getUserId model.authStatus
+
         newForm =
             findById id model.routines
                 |> Maybe.withDefault initialRoutine
+                |> \form ->
+                    case maybeUserId of
+                        Just userId ->
+                            { form | author = userId }
+
+                        Nothing ->
+                            form
 
         sections =
             List.filter (\s -> s.routine == id) model.sections
@@ -457,11 +468,14 @@ initializeRoutineForm id model =
         }
 
 
-{-| Reinitialize the RoutineForm if currently at the RoutineEditRoute.
+{-| Reinitialize the RoutineForm if adding or editing a Routine.
 -}
 reinitializeRoutineForm : Model -> Model
 reinitializeRoutineForm model =
     case model.route of
+        RoutineAddRoute ->
+            initializeRoutineForm 0 model
+
         RoutineEditRoute id ->
             initializeRoutineForm id model
 
