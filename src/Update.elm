@@ -40,7 +40,16 @@ urlUpdate route model =
                     setExerciseForm id model
 
                 RoutineAddRoute ->
-                    { model | routineForm = initialRoutine }
+                    case model.authStatus of
+                        Auth.Authorized user ->
+                            let
+                                initial =
+                                    { initialRoutine | author = user.id }
+                            in
+                                { model | routineForm = initial }
+
+                        _ ->
+                            { model | routineForm = initialRoutine }
 
                 RoutineEditRoute id ->
                     initializeRoutineForm id model
