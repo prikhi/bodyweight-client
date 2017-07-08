@@ -196,7 +196,7 @@ view tagger urlChange submitMsg status form =
                                 ]
                             ]
                         , button [ class "btn btn-primary btn-block", type_ "submit" ]
-                            [ text "Sign In" ]
+                            [ text titleText ]
                         , div [ class "text-right mt-1" ]
                             [ a [ onClickNoDefault <| urlChange linkRoute, href "#" ]
                                 [ text linkText ]
