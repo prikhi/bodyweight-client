@@ -245,7 +245,7 @@ update msg model =
         FetchRoutine (Ok newRoutine) ->
             let
                 updatedModel =
-                    { model | routines = newRoutine :: model.routines }
+                    { model | routines = replaceById newRoutine model.routines }
             in
                 ( reinitializeRoutineForm updatedModel, Cmd.none )
 
