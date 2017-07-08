@@ -1,5 +1,6 @@
 module Views.Routines exposing (..)
 
+import Auth
 import Array exposing (Array)
 import Html exposing (..)
 import Html.Attributes exposing (type_, value, name, selected, checked, class, id, disabled, for)
@@ -28,14 +29,21 @@ routinesPage routines =
 {-| Render the details of a single `Routine`.
 -}
 routinePage : Model -> Routine -> Html Msg
-routinePage model { id, name, description, copyright } =
+routinePage model { id, name, description, author, copyright } =
     let
         sections =
             List.filter (\s -> s.routine == id) model.sections
-    in
-        div []
-            [ h1 [] [ text name ]
-            , p []
+
+        canModify =
+            case model.authStatus of
+                Auth.Authorized user ->
+                    user.isAdmin || user.id == author
+
+                _ ->
+                    False
+
+        buttons =
+            p []
                 [ button
                     [ onClick <| NavigateTo <| RoutineEditRoute id
                     , class "btn btn-sm btn-secondary"
@@ -48,6 +56,10 @@ routinePage model { id, name, description, copyright } =
                     ]
                     [ text "Delete" ]
                 ]
+    in
+        div []
+            [ h1 [] [ text name ]
+            , htmlOrBlank canModify buttons
             , htmlOrBlank (not <| String.isEmpty copyright) <|
                 p [] [ small [] [ text "Copyright: ", text copyright ] ]
             , htmlOrBlank (not <| String.isEmpty description) <|

@@ -102,6 +102,7 @@ client & server repositories since they are tightly integrated.
 
 * Data Validation
     * Routines
+        * Author cannot change
         * To Progress must be greater than Reps/Hold Time
         * Exercises in a single progression cannot be repeated
         * Sections must have at least 1 SectionExercise
