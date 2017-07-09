@@ -14,8 +14,7 @@ Right now only the following is supported:
 
 Eventually we will support:
 
-* Logging Workouts
-* Subscribing to Routines
+* Subscribing to Routines & Logging Workouts
 * Exporting Routines & Log Entries (Markdown, CSV)
 * Reports & Graphs
 
@@ -45,9 +44,9 @@ client & server repositories since they are tightly integrated.
 
 * Add Screenshot to README
 * Refactor backend URLs into `Endpoint` type
-* Refactor view/model folders into folders by datatype(`routines/model`)
+* Refactor view/model folders into folders by datatype(`routines/model`)?
 * Refactor API Command Messages into separate Message Type & Update Function
-* Refactor model data into Dicts
+* Refactor model data into Dicts?
 * Reduce server queries(only load necessary sections, exercises, etc.)
 * Fix 404 flash on initial load
 * Add Exercise Form
@@ -56,22 +55,33 @@ client & server repositories since they are tightly integrated.
         * Switch backend from bool to union type
     * Strip URL from Youtube/Amazon ID fields
     * Error messages!
+* Exercises
+    * Embed Amazon Products in Pages
+    * Cards w/ YT Vid Embeds for Exercises Page, w/ toggle table/cards button
+    * Filters Exercises page for Reps-only or Holds-only
 * Add Routine Form
     * Refactor RoutineChange Messages into separate updateRoutineForm func/msg
     * Autocomplete Exercise Selects
     * Disable Save/Reset if no changes(for routines, sections, & exercises)
     * Default reps/hold time/reps to progress per section & routine
     * Add Up/Down Arrows for Exercise Progressions?
+    * Review the BWF subreddit routine, see if all information could be entered
+      into our form
     * Error messages!
-* Table/Cards toggle for Exercise page(embed yt vids as card thumbnails?)
+* Routines
+    * Fetch only relevant sections/exercises on View/Edit Routine pages,
+      instead of all of them(or sideload the related resources in the
+      routine's response)
+    * Export to CSV & Markdown(markdown useful for posting to reddit)
+    * Multiple Editors
 * Add Routine Logging Forms
     * Log an already completed workout
     * Log a workout as you complete it
+* Routine Logs
+    * View progress for a whole routine or specific exercise/progression, maybe
+      a table & graph showing logged reps/time.
     * Export all logs to Excel & CSV
     * Export single log to Markdown
-* Routines
-    * Export to CSV & Markdown
-    * Multiple Editors
 * Users
     * Login/logout of all open tabs(watch for `window.storage` event)
     * Profiles & profile pages
@@ -80,9 +90,6 @@ client & server repositories since they are tightly integrated.
         * Created routines
         * Logged workouts
         * Reddit/twitter/facebook username
-    * Routines owned by Users(add author to Routines table)
-    * Only routine owners can edit/delete their routines
-    * Admin Users allowed to add/edit/delete exercises
     * Page for admin users to see exercises w/o YouTube or Amazon links
     * Only a user can see their private routines
     * User can subscribe to a routine(Add subscriber count to Routines table)
@@ -92,6 +99,7 @@ client & server repositories since they are tightly integrated.
     * For anonymous users, benefits of registering(add/sub/log routines)
     * Links to subreddit
     * Links to a User's subscribed routines & logging form for those routines
+    * Random Exercise w/ Video & Description?
 * Sharing private routines w/ users
     * Password-protected
     * Subscribe Link
@@ -99,11 +107,12 @@ client & server repositories since they are tightly integrated.
 * Routine Feedback
     * Allow users to comment on routines
     * Versioning of routines, with list of changes between each version
+      (this is complex, how would we handle logs of old versions?)
 
-* Data Validation
+* Data Validation(backend & frontend)
     * Routines
         * Author cannot change
-        * To Progress must be greater than Reps/Hold Time
+        * To Progress must be greater than or equal to Reps/Hold Time
         * Exercises in a single progression cannot be repeated
         * Sections must have at least 1 SectionExercise
         * Sets/Reps/Time/Progress cannot be 0
