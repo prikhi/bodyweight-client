@@ -43,7 +43,6 @@ This is a mix of client & server stuffs... We should probably consolidate the
 client & server repositories since they are tightly integrated.
 
 * Add Screenshot to README
-* Refactor backend URLs into `Endpoint` type
 * Refactor view/model folders into folders by datatype(`routines/model`)?
 * Refactor API Command Messages into separate Message Type & Update Function
 * Refactor model data into Dicts?

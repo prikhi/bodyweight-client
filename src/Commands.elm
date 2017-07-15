@@ -1,5 +1,6 @@
 module Commands exposing (..)
 
+import Api.Endpoints as Endpoints
 import Array exposing (Array)
 import Auth
 import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, withHeader, withJsonBody)
@@ -89,9 +90,9 @@ performApiRequest msg =
 
 {-| Fetch data from the backend server.
 -}
-fetch : String -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
-fetch url decoder msg authStatus =
-    get ("/api/" ++ url)
+fetch : Endpoints.Endpoint -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+fetch endpoint decoder msg authStatus =
+    get (Endpoints.endpointToURL endpoint)
         |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
         |> performApiRequest msg
@@ -99,9 +100,9 @@ fetch url decoder msg authStatus =
 
 {-| Create data on the backend server.
 -}
-create : String -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
-create url jsonValue decoder msg authStatus =
-    post ("/api/" ++ url)
+create : Endpoints.Endpoint -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+create endpoint jsonValue decoder msg authStatus =
+    post (Endpoints.endpointToURL endpoint)
         |> withJsonBody jsonValue
         |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
@@ -110,9 +111,9 @@ create url jsonValue decoder msg authStatus =
 
 {-| Update a resource on the backend server.
 -}
-update : String -> Int -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
-update url id jsonValue decoder msg authStatus =
-    put ("/api/" ++ url ++ "/" ++ toString id)
+update : Endpoints.Endpoint -> Encode.Value -> Decode.Decoder a -> (HttpMsg a -> msg) -> Auth.Status -> Cmd msg
+update endpoint jsonValue decoder msg authStatus =
+    put (Endpoints.endpointToURL endpoint)
         |> withJsonBody jsonValue
         |> withAuthHeader authStatus
         |> send (jsonReader decoder) stringReader
@@ -121,9 +122,9 @@ update url id jsonValue decoder msg authStatus =
 
 {-| Delete a resource from the backend server.
 -}
-delete : String -> Int -> (HttpMsg Int -> msg) -> Auth.Status -> Cmd msg
-delete url id msg authStatus =
-    HttpBuilder.delete ("/api/" ++ url ++ "/" ++ toString id)
+delete : (Int -> Endpoints.Endpoint) -> Int -> (HttpMsg Int -> msg) -> Auth.Status -> Cmd msg
+delete endpoint id msg authStatus =
+    HttpBuilder.delete (Endpoints.endpointToURL <| endpoint id)
         |> withAuthHeader authStatus
         |> send (jsonReader (Decode.succeed id)) stringReader
         |> performApiRequest msg
@@ -164,7 +165,7 @@ createOrUpdateArray selector createFunc updateFunc =
 
 register : Auth.Form -> Cmd Msg
 register form =
-    create "users/register"
+    create Endpoints.Register
         (Encode.object
             [ ( "registrationName", Encode.string form.username )
             , ( "registrationPassword", Encode.string form.password )
@@ -178,7 +179,7 @@ register form =
 
 login : Auth.Form -> Cmd Msg
 login form =
-    create "users/login"
+    create Endpoints.Login
         (Encode.object
             [ ( "loginName", Encode.string form.username )
             , ( "loginPassword", Encode.string form.password )
@@ -191,7 +192,7 @@ login form =
 
 reauthorize : String -> Int -> Cmd Msg
 reauthorize authToken userId =
-    create "users/reauthorize"
+    create Endpoints.Reauthorize
         (Encode.object
             [ ( "authToken", Encode.string authToken )
             , ( "authUserId", Encode.int userId )
@@ -208,17 +209,17 @@ reauthorize authToken userId =
 
 fetchExercises : Auth.Status -> Cmd Msg
 fetchExercises authStatus =
-    fetch "exercises" (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises authStatus
+    fetch Endpoints.Exercises (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises authStatus
 
 
 fetchExercise : Auth.Status -> ExerciseId -> Cmd Msg
 fetchExercise authStatus id =
-    fetch ("exercises/" ++ toString id) (Decode.field "exercise" exerciseDecoder) FetchExercise authStatus
+    fetch (Endpoints.Exercise id) (Decode.field "exercise" exerciseDecoder) FetchExercise authStatus
 
 
 createExercise : Auth.Status -> Exercise -> Cmd Msg
 createExercise authStatus exercise =
-    create "exercises"
+    create Endpoints.Exercises
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         (Decode.field "exercise" exerciseDecoder)
         CreateExercise
@@ -227,8 +228,7 @@ createExercise authStatus exercise =
 
 updateExercise : Auth.Status -> Exercise -> Cmd Msg
 updateExercise authStatus exercise =
-    update "exercises"
-        exercise.id
+    update (Endpoints.Exercise exercise.id)
         (Encode.object [ ( "exercise", exerciseEncoder exercise ) ])
         (Decode.field "exercise" exerciseDecoder)
         CreateExercise
@@ -237,7 +237,7 @@ updateExercise authStatus exercise =
 
 deleteExercise : Auth.Status -> ExerciseId -> Cmd Msg
 deleteExercise authStatus exerciseId =
-    delete "exercises" exerciseId DeleteExercise authStatus
+    delete Endpoints.Exercise exerciseId DeleteExercise authStatus
 
 
 
@@ -246,17 +246,17 @@ deleteExercise authStatus exerciseId =
 
 fetchRoutines : Auth.Status -> Cmd Msg
 fetchRoutines authStatus =
-    fetch "routines" (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines authStatus
+    fetch Endpoints.Routines (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines authStatus
 
 
 fetchRoutine : Auth.Status -> RoutineId -> Cmd Msg
 fetchRoutine authStatus routineId =
-    fetch ("routines/" ++ toString routineId) (Decode.field "routine" routineDecoder) FetchRoutine authStatus
+    fetch (Endpoints.Routine routineId) (Decode.field "routine" routineDecoder) FetchRoutine authStatus
 
 
 createRoutine : Auth.Status -> Routine -> Cmd Msg
 createRoutine authStatus routine =
-    create "routines"
+    create Endpoints.Routines
         (Encode.object [ ( "routine", routineEncoder routine ) ])
         (Decode.field "routine" routineDecoder)
         CreateRoutine
@@ -265,8 +265,7 @@ createRoutine authStatus routine =
 
 updateRoutine : Auth.Status -> Routine -> Cmd Msg
 updateRoutine authStatus routine =
-    update "routines"
-        routine.id
+    update (Endpoints.Routine routine.id)
         (Encode.object [ ( "routine", routineEncoder routine ) ])
         (Decode.field "routine" routineDecoder)
         UpdateRoutine
@@ -275,7 +274,7 @@ updateRoutine authStatus routine =
 
 deleteRoutine : Auth.Status -> RoutineId -> Cmd Msg
 deleteRoutine authStatus routineId =
-    delete "routines" routineId DeleteRoutine authStatus
+    delete Endpoints.Routine routineId DeleteRoutine authStatus
 
 
 
@@ -284,12 +283,12 @@ deleteRoutine authStatus routineId =
 
 fetchSections : Auth.Status -> Cmd Msg
 fetchSections authStatus =
-    fetch "sections" (Decode.field "section" (Decode.list sectionDecoder)) FetchSections authStatus
+    fetch Endpoints.Sections (Decode.field "section" (Decode.list sectionDecoder)) FetchSections authStatus
 
 
 createSection : Auth.Status -> Int -> Section -> Cmd Msg
 createSection authStatus index section =
-    create "sections"
+    create Endpoints.Sections
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
         (Decode.field "section" sectionDecoder)
         (CreateSection index)
@@ -298,8 +297,7 @@ createSection authStatus index section =
 
 updateSection : Auth.Status -> Int -> Section -> Cmd Msg
 updateSection authStatus index section =
-    update "sections"
-        section.id
+    update (Endpoints.Section section.id)
         (Encode.object [ ( "section", sectionEncoder { section | order = index } ) ])
         (Decode.field "section" sectionDecoder)
         (UpdateSection index)
@@ -308,7 +306,7 @@ updateSection authStatus index section =
 
 deleteSection : Auth.Status -> Int -> SectionId -> Cmd Msg
 deleteSection authStatus index id =
-    delete "sections" id (DeleteSection index) authStatus
+    delete Endpoints.Section id (DeleteSection index) authStatus
 
 
 
@@ -317,7 +315,7 @@ deleteSection authStatus index id =
 
 fetchSectionExercises : Auth.Status -> Cmd Msg
 fetchSectionExercises authStatus =
-    fetch "sectionExercises"
+    fetch Endpoints.SectionExercises
         (Decode.field "sectionExercise" (Decode.list sectionExerciseDecoder))
         FetchSectionExercises
         authStatus
@@ -325,7 +323,7 @@ fetchSectionExercises authStatus =
 
 createSectionExercise : Auth.Status -> Int -> Int -> SectionExercise -> Cmd Msg
 createSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
-    create "sectionExercises"
+    create Endpoints.SectionExercises
         (Encode.object
             [ ( "sectionExercise"
               , sectionExerciseEncoder { sectionExercise | order = exerciseIndex }
@@ -339,8 +337,7 @@ createSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
 
 updateSectionExercise : Auth.Status -> Int -> Int -> SectionExercise -> Cmd Msg
 updateSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
-    update "sectionExercises"
-        sectionExercise.id
+    update (Endpoints.SectionExercise sectionExercise.id)
         (Encode.object
             [ ( "sectionExercise"
               , sectionExerciseEncoder { sectionExercise | order = exerciseIndex }
@@ -354,4 +351,4 @@ updateSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
 
 deleteSectionExercise : Auth.Status -> Int -> Int -> SectionExerciseId -> Cmd Msg
 deleteSectionExercise authStatus sectionIndex exerciseIndex id =
-    delete "sectionExercises" id (DeleteSectionExercise sectionIndex exerciseIndex) authStatus
+    delete Endpoints.SectionExercise id (DeleteSectionExercise sectionIndex exerciseIndex) authStatus
