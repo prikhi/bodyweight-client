@@ -5,6 +5,7 @@ import Auth
 import Models.Exercises exposing (Exercise, initialExercise)
 import Models.Routines exposing (Routine, initialRoutine)
 import Models.Sections exposing (Section, SectionForm, SectionExercise, initialSectionForm)
+import Models.Subscriptions exposing (Subscription)
 import RemoteStatus
 import Routing exposing (Route)
 
@@ -16,6 +17,7 @@ type alias Model =
     , routines : List Routine
     , sections : List Section
     , sectionExercises : List SectionExercise
+    , subscriptions : List Subscription
     , exerciseForm : Exercise
     , routineForm : Routine
     , sectionForms : Array SectionForm
@@ -37,6 +39,7 @@ initialModel route =
     , sections = []
     , sectionForms = Array.fromList [ initialSectionForm 0 ]
     , sectionExercises = []
+    , subscriptions = []
     , savingStatus = RemoteStatus.initial
     , route = route
     , authStatus = Auth.initial route

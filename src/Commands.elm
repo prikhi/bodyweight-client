@@ -2,7 +2,7 @@ module Commands exposing (..)
 
 import Api.Endpoints as Endpoints
 import Array exposing (Array)
-import Auth
+import Auth exposing (UserId)
 import HttpBuilder exposing (send, stringReader, jsonReader, get, post, put, withHeader, withJsonBody)
 import Json.Decode as Decode
 import Json.Encode as Encode
@@ -10,6 +10,7 @@ import Messages exposing (Msg(..), HttpMsg)
 import Models.Exercises exposing (Exercise, ExerciseId, exerciseDecoder, exerciseEncoder)
 import Models.Routines exposing (Routine, RoutineId, routineDecoder, routineEncoder)
 import Models.Sections exposing (Section, SectionExercise, SectionId, SectionExerciseId, sectionDecoder, sectionEncoder, sectionExerciseDecoder, sectionExerciseEncoder)
+import Models.Subscriptions exposing (SubscriptionId, subscriptionDecoder, subscriptionEncoder)
 import Routing exposing (Route(..))
 import Task
 
@@ -352,3 +353,41 @@ updateSectionExercise authStatus sectionIndex exerciseIndex sectionExercise =
 deleteSectionExercise : Auth.Status -> Int -> Int -> SectionExerciseId -> Cmd Msg
 deleteSectionExercise authStatus sectionIndex exerciseIndex id =
     delete Endpoints.SectionExercise id (DeleteSectionExercise sectionIndex exerciseIndex) authStatus
+
+
+
+{- Subscriptions -}
+
+
+fetchSubscriptions : Auth.Status -> Cmd Msg
+fetchSubscriptions =
+    fetch Endpoints.Subscriptions
+        (Decode.field "subscription" (Decode.list subscriptionDecoder))
+        FetchSubscriptions
+
+
+createSubscription : Auth.Status -> RoutineId -> Cmd Msg
+createSubscription authStatus routineId =
+    case authStatus of
+        Auth.Authorized user ->
+            create Endpoints.Subscriptions
+                (Encode.object
+                    [ ( "subscription", subscriptionEncoder user.id routineId )
+                    ]
+                )
+                (Decode.field "subscription" subscriptionDecoder)
+                CreateSubscription
+                authStatus
+
+        _ ->
+            Cmd.none
+
+
+deleteSubscription : Auth.Status -> SubscriptionId -> Cmd Msg
+deleteSubscription authStatus id =
+    case authStatus of
+        Auth.Authorized user ->
+            delete Endpoints.Subscription id DeleteSubscription authStatus
+
+        _ ->
+            Cmd.none

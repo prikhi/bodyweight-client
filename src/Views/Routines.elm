@@ -34,15 +34,15 @@ routinePage model { id, name, description, author, copyright } =
         sections =
             List.filter (\s -> s.routine == id) model.sections
 
-        canModify =
+        ( canModify, canSubscribe ) =
             case model.authStatus of
                 Auth.Authorized user ->
-                    user.isAdmin || user.id == author
+                    ( user.isAdmin || user.id == author, True )
 
                 _ ->
-                    False
+                    ( False, False )
 
-        buttons =
+        authorButtons =
             p []
                 [ button
                     [ onClick <| NavigateTo <| RoutineEditRoute id
@@ -56,10 +56,23 @@ routinePage model { id, name, description, author, copyright } =
                     ]
                     [ text "Delete" ]
                 ]
+
+        subscribeButton =
+            if List.any (\sub -> sub.routine == id) model.subscriptions then
+                p []
+                    [ button [ class "btn btn-sm btn-danger", onClick <| SubscriptionButtonClicked False id ]
+                        [ text "Unsubscribe" ]
+                    ]
+            else
+                p []
+                    [ button [ class "btn btn-sm btn-primary", onClick <| SubscriptionButtonClicked True id ]
+                        [ text "Subscribe" ]
+                    ]
     in
         div []
             [ h1 [] [ text name ]
-            , htmlOrBlank canModify buttons
+            , htmlOrBlank canModify authorButtons
+            , htmlOrBlank canSubscribe subscribeButton
             , htmlOrBlank (not <| String.isEmpty copyright) <|
                 p [] [ small [] [ text "Copyright: ", text copyright ] ]
             , htmlOrBlank (not <| String.isEmpty description) <|

@@ -3,6 +3,7 @@ module Api.Endpoints exposing (Endpoint(..), endpointToURL)
 import Models.Exercises exposing (ExerciseId)
 import Models.Routines exposing (RoutineId)
 import Models.Sections exposing (SectionId, SectionExerciseId)
+import Models.Subscriptions exposing (SubscriptionId)
 
 
 type Endpoint
@@ -17,6 +18,8 @@ type Endpoint
     | Section SectionId
     | SectionExercises
     | SectionExercise SectionExerciseId
+    | Subscriptions
+    | Subscription SubscriptionId
 
 
 endpointToURL : Endpoint -> String
@@ -56,6 +59,12 @@ endpointToURL endpoint =
 
                 SectionExercise id ->
                     nestedUnder SectionExercises <| toString id
+
+                Subscriptions ->
+                    "subscriptions"
+
+                Subscription id ->
+                    nestedUnder Subscriptions <| toString id
 
         nestedUnder endpoint postfix =
             toURL endpoint ++ "/" ++ postfix

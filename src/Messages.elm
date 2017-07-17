@@ -5,6 +5,7 @@ import HttpBuilder exposing (Error)
 import Models.Exercises exposing (ExerciseId, Exercise)
 import Models.Routines exposing (RoutineId, Routine)
 import Models.Sections exposing (SectionId, SectionExerciseId, Section, SectionExercise)
+import Models.Subscriptions exposing (SubscriptionId, Subscription)
 import Routing exposing (Route)
 
 
@@ -79,6 +80,7 @@ type Msg
     | FetchExercise (HttpMsg Exercise)
     | CreateExercise (HttpMsg Exercise)
     | DeleteExercise (HttpMsg ExerciseId)
+    | SubscriptionButtonClicked Bool RoutineId
     | DeleteRoutineClicked RoutineId
     | RoutineFormChange RoutineFormMessage
     | SubmitAddRoutineForm
@@ -103,3 +105,6 @@ type Msg
     | CreateSectionExercise Int Int (HttpMsg SectionExercise)
     | UpdateSectionExercise Int Int (HttpMsg SectionExercise)
     | DeleteSectionExercise Int Int (HttpMsg SectionExerciseId)
+    | FetchSubscriptions (HttpMsg (List Subscription))
+    | CreateSubscription (HttpMsg Subscription)
+    | DeleteSubscription (HttpMsg SubscriptionId)

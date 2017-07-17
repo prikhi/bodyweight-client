@@ -119,6 +119,9 @@ update msg model =
 
         AuthorizeUser (Ok user) ->
             let
+                newAuthStatus =
+                    Auth.Authorized user
+
                 storeTokenCommand =
                     if model.authForm.remember then
                         Ports.storeAuthDetails ( user.authToken, user.id )
@@ -132,14 +135,15 @@ update msg model =
                         Cmd.none
             in
                 ( { model
-                    | authStatus = Auth.Authorized user
+                    | authStatus = newAuthStatus
                     , authForm = Auth.initialForm
                   }
                     |> reinitializeRoutineForm
                 , Cmd.batch
                     [ navigateCommand
                     , storeTokenCommand
-                    , C.fetchForRoute (Auth.Authorized user) model.route
+                    , C.fetchForRoute newAuthStatus model.route
+                    , C.fetchSubscriptions newAuthStatus
                     ]
                 )
 
@@ -182,6 +186,20 @@ update msg model =
 
         DeleteExercise (Err _) ->
             ( model, Cmd.none )
+
+        SubscriptionButtonClicked shouldSubscribe routineId ->
+            let
+                apiCommand =
+                    if shouldSubscribe then
+                        C.createSubscription model.authStatus routineId
+                    else
+                        model.subscriptions
+                            |> List.filter (\sub -> sub.routine == routineId)
+                            |> List.head
+                            |> Maybe.map (.id >> C.deleteSubscription model.authStatus)
+                            |> Maybe.withDefault Cmd.none
+            in
+                ( model, apiCommand )
 
         DeleteRoutineClicked id ->
             ( model, C.deleteRoutine model.authStatus id )
@@ -411,6 +429,34 @@ update msg model =
                 )
 
         DeleteSectionExercise _ _ (Err _) ->
+            ( model, Cmd.none )
+
+        {- Replace List of Subscriptions in the Model. -}
+        FetchSubscriptions (Ok newSubscriptions) ->
+            ( { model | subscriptions = newSubscriptions }, Cmd.none )
+
+        FetchSubscriptions (Err _) ->
+            ( model, Cmd.none )
+
+        {- Add the New Subscription to the List of Subscriptions. -}
+        CreateSubscription (Ok subscription) ->
+            ( { model | subscriptions = subscription :: model.subscriptions }
+            , Cmd.none
+            )
+
+        CreateSubscription (Err _) ->
+            ( model, Cmd.none )
+
+        {- Remove the Subscription Using the Routine's ID. -}
+        DeleteSubscription (Ok subscriptionId) ->
+            ( { model
+                | subscriptions =
+                    List.filter (\x -> x.id /= subscriptionId) model.subscriptions
+              }
+            , Cmd.none
+            )
+
+        DeleteSubscription (Err _) ->
             ( model, Cmd.none )
 
 
