@@ -22,11 +22,8 @@ type Endpoint
 endpointToURL : Endpoint -> String
 endpointToURL endpoint =
     let
-        nestedUnder endpoint postfix =
-            endpointToURL endpoint ++ "/" ++ postfix
-    in
-        "/api/"
-            ++ case endpoint of
+        toURL endpoint =
+            case endpoint of
                 Register ->
                     "users/register"
 
@@ -59,3 +56,8 @@ endpointToURL endpoint =
 
                 SectionExercise id ->
                     nestedUnder SectionExercises <| toString id
+
+        nestedUnder endpoint postfix =
+            toURL endpoint ++ "/" ++ postfix
+    in
+        "/api/" ++ toURL endpoint
