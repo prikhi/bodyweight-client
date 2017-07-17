@@ -10,11 +10,15 @@ import Routing
 -- Model
 
 
+type alias UserId =
+    Int
+
+
 {-| The current User.
 -}
 type alias User =
     { username : String
-    , id : Int
+    , id : UserId
     , isAdmin : Bool
     , authToken : String
     }
