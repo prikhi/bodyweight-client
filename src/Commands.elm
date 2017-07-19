@@ -209,8 +209,8 @@ reauthorize authToken userId =
 
 
 fetchExercises : Auth.Status -> Cmd Msg
-fetchExercises authStatus =
-    fetch Endpoints.Exercises (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises authStatus
+fetchExercises =
+    fetch Endpoints.Exercises (Decode.field "exercise" (Decode.list exerciseDecoder)) FetchExercises
 
 
 fetchExercise : Auth.Status -> ExerciseId -> Cmd Msg
@@ -246,8 +246,8 @@ deleteExercise authStatus exerciseId =
 
 
 fetchRoutines : Auth.Status -> Cmd Msg
-fetchRoutines authStatus =
-    fetch Endpoints.Routines (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines authStatus
+fetchRoutines =
+    fetch Endpoints.Routines (Decode.field "routine" (Decode.list routineDecoder)) FetchRoutines
 
 
 fetchRoutine : Auth.Status -> RoutineId -> Cmd Msg
@@ -283,8 +283,8 @@ deleteRoutine authStatus routineId =
 
 
 fetchSections : Auth.Status -> Cmd Msg
-fetchSections authStatus =
-    fetch Endpoints.Sections (Decode.field "section" (Decode.list sectionDecoder)) FetchSections authStatus
+fetchSections =
+    fetch Endpoints.Sections (Decode.field "section" (Decode.list sectionDecoder)) FetchSections
 
 
 createSection : Auth.Status -> Int -> Section -> Cmd Msg
@@ -315,11 +315,10 @@ deleteSection authStatus index id =
 
 
 fetchSectionExercises : Auth.Status -> Cmd Msg
-fetchSectionExercises authStatus =
+fetchSectionExercises =
     fetch Endpoints.SectionExercises
         (Decode.field "sectionExercise" (Decode.list sectionExerciseDecoder))
         FetchSectionExercises
-        authStatus
 
 
 createSectionExercise : Auth.Status -> Int -> Int -> SectionExercise -> Cmd Msg

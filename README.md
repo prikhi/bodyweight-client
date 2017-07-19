@@ -47,7 +47,6 @@ client & server repositories since they are tightly integrated.
 * Refactor API Command Messages into separate Message Type & Update Function
 * Refactor model data into Dicts?
 * Refactor Routine Page Messages into separate type?
-* ETA Reduction on applicable fetch commands
 * Reduce server queries(only load necessary sections, exercises, etc.)
 * Fix 404 flash on initial load
 * Add Exercise Form
